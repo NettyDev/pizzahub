@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/ThemeSwitch";
 import Image from "next/image";
 
 export default function Home() {
   return <div>
     <Button variant="destructive">Click me</Button>
+    <ModeToggle/>
   </div>
 }
 
