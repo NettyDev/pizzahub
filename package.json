@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:docker": "docker build -t next .",
+    "build:podman": "podman build -t next .",
     "start": "next start",
+    "start:docker": "docker run -p 3000:3000 next",
+    "start:podman": "podman run -p 3000:3000 next",
     "lint": "next lint"
   },
   "dependencies": {
