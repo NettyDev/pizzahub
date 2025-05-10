@@ -1,13 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/ui/ThemeSwitch";
-import Image from "next/image";
+import Menu from "@/components/Menu";
 
 export default function Home() {
-  return <div>
-    <Button variant="destructive">Click me</Button>
-    <ModeToggle/>
-  </div>
+  return (
+    <>
+      <Menu />
+      <h1>Strona główna</h1>
+    </>
+  );
 }
+
+// export default function Home() {
+//   return <div>
+//     <Button variant="destructive">Click me</Button>
+//     <ModeToggle/>
+//   </div>
+// }
 
 // export default function Home() {
 //   return (
