@@ -121,6 +121,14 @@
   }
 }
 
+@font-face {
+  font-family: poppins-bold;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("/poppins.bold.ttf") format("ttf");
+}
+
 html, body {
   height: 100%;
 }
