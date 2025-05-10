@@ -4,10 +4,11 @@ FROM base AS builder
 
 WORKDIR /app
 
-COPY --exclude=node_modules --exclude=.next . .
+COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+RUN rm -rf node_modules && rm -rf .next
 RUN bun install
 RUN bun --bun run build
 
