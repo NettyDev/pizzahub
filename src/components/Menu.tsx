@@ -12,8 +12,8 @@ import Link from "next/link";
 export default function Menu() {
   return (
     <>
-      <div className="flex justify-center shadow-2xs">
-        <Image src="/logo.png" width={125} height={125} alt="" />
+      <div className="flex justify-center shadow-2xs pt-1">
+        <img src="/logo.svg" width={250} alt="" />
       </div>
       <div className="w-full h-11 py-1 px-4 shadow-md  flex justify-center relative">
         <NavigationMenu>
