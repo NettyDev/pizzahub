@@ -145,13 +145,19 @@ export default function Home() {
             <h1 className="font-poppins-bold font-bold text-shadow-xs text-[48px] text-transparent bg-gradient-to-r from-red-700 to-stone-950 bg-clip-text">Piekielnie dobra, niebiańsko pyszna!</h1>
           </div>
           <div>
-            <p>Nasza pizza powstaje w ogniu prawdziwej pasji – dosłownie i w przenośni! 🔥 W piecu rozgrzanym do piekielnych temperatur ciasto nabiera idealnej chrupkości, a ser topi się w perfekcyjnej harmonii. Nie uznajemy kompromisów – każdy składnik jest wyselekcjonowany z najwyższą troską, tak aby efekt był niebiańsko pyszny. 🌟
-
-Każdy etap to sztuka: od ręcznie wyrabianego ciasta, przez świeże, aromatyczne dodatki, aż po idealnie wypieczony placek, który trafia do Twojego pudełka. A gdy pizza jest gotowa, nasi dostawcy działają niczym anielskie posłańcy – szybko, sprawnie i z troską, by każda dostawa była jak błogosławieństwo dla Twojego apetytu. 😇
-
-Nie ważne, czy jesteś miłośnikiem klasycznych smaków, czy lubisz eksperymentować – u nas każdy znajdzie coś dla siebie. Bo dobra pizza powinna rozpalać smakowe zmysły, ale jednocześnie otulać podniebienie jak kulinarny raj.
-
-🔥 Niebo i piekło łączą się tu w perfekcyjnej harmonii. Zamów i przekonaj się sam! 🍕😋 Czy ten opis odpowiada klimatowi Twojej pizzerii? Możemy dopracować detale, jeśli masz konkretne oczekiwania! 😊</p>
+            <p>Nasza pizza powstaje w ogniu prawdziwej pasji - dosłownie i w przenośni! W piecu rozgrzanym do 
+              piekelnych temperatur ciasto nabiera idealnej chrupkości, a ser topi się w perfekcyjnej harmonii.
+              Nie uznajemy kompromisów - każdy składnik jest wyselekcjonowany z najwyższą troską, tak aby efekt był niebiańsko pyszny.
+              <br/><br/>
+              Każdy etap to sztuka: od ręcznie wyrabianego ciasta, przez świeże aromatyczne dodatki, aż po idealnie wypieczony placek, który
+              trafia do Twojego pudełka. A gdy pizza jest gotowa, nasi dostawcy działają niczym anielskie posłańcy - szybko, sprawnie i z troską
+              by każda dostawa była jak błogosławieństwo dla Twojego apetytu.
+              <br/><br/>
+              Nie ważne, czy jesteś miłośnikiem klasycznych smaków, czy lubisz eksperymentować - u nas każdy znajdzie coś dla siebie. Bo dobra pizza
+              powinna rozpalać smakowe zmysły, ale jednocześnie otulać podniebienie jak kulinarny raj.
+              <br/><br/>
+              Niebo i piekło łączą się tu w perfekcyjnej harmonii. Zamów i przekonaj się sam!
+            </p>
           </div>
         </div>
 
@@ -162,8 +168,9 @@ Nie ważne, czy jesteś miłośnikiem klasycznych smaków, czy lubisz eksperymen
         </div>
       </div>
 
-      <div>
-        <h1>statystyki</h1>
+      <div className="bg-linear-to-r from-red-700 to-stone-950">
+        <h1 className="font-poppins-bold font-bold text-shadow-xs text-3xl text-red-700 text-center">statystyki</h1>
+        
       </div>
 
 
