@@ -1,4 +1,5 @@
 import Menu from "@/components/Menu";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -198,7 +199,8 @@ export default function Home() {
 
       </div>
 
-
+    <Footer/>
     </>
   );
 }
+
