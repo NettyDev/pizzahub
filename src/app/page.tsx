@@ -145,7 +145,7 @@ export default function Home() {
             <h1 className="font-poppins-bold font-bold text-shadow-xs text-[48px] text-transparent bg-gradient-to-r from-red-700 to-stone-950 bg-clip-text">Piekielnie dobra, niebiańsko pyszna!</h1>
           </div>
           <div>
-            <p>Nasza pizza powstaje w ogniu prawdziwej pasji - dosłownie i w przenośni! W piecu rozgrzanym do 
+            <p className="font-poppins-bold text-shadow-xs text-lg text-stone-950">Nasza pizza powstaje w ogniu prawdziwej pasji - dosłownie i w przenośni! W piecu rozgrzanym do 
               piekelnych temperatur ciasto nabiera idealnej chrupkości, a ser topi się w perfekcyjnej harmonii.
               Nie uznajemy kompromisów - każdy składnik jest wyselekcjonowany z najwyższą troską, tak aby efekt był niebiańsko pyszny.
               <br/><br/>
@@ -168,9 +168,34 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-linear-to-r from-red-700 to-stone-950">
-        <h1 className="font-poppins-bold font-bold text-shadow-xs text-3xl text-red-700 text-center">statystyki</h1>
-        
+      <div className="py-24 sm:py-32">
+        <div className="text-center">
+          <h2 className="font-poppins-bold font-bold text-shadow-xs text-3xl text-red-700">nasze osiągnięcia w liczbach!</h2>
+          <p className="mt-4 text-lg leading-8 text-stone-950 text-shadow-xs">
+            Jesteśmy dumni z każdej pizzy, którą przygotowaliśmy, każdego zadowolonego klienta, i całego zespołu, który dba o perfekcyjny smak i obsługę!
+          </p>
+        </div>
+        <dl className="mt-16 flex flex-wrap justify-center gap-0.5 overflow-hidden rounded-2xl text-center">
+          <div className="flex flex-col bg-stone-50 p-8">
+          <dt className="text-sm font-poppins-bold leading-6 text-stone-950 text-shadow-xs">Pizz wyciągniętych prosto z pieca</dt>
+          <dd className="text-3xl font-poppins-bold font-bold text-red-700 text-shadow-xs">1000</dd>
+          </div>
+
+          <div className="flex flex-col bg-stone-50 p-8">
+          <dt className="text-sm font-poppins-bold leading-6 text-stone-950 text-shadow-xs">Zadowolonych klientów</dt>
+          <dd className="text-3xl font-poppins-bold font-bold text-red-700 text-shadow-xs">100%</dd>
+          </div>
+
+          <div className="flex flex-col bg-stone-50 p-8">
+          <dt className="text-sm font-poppins-bold leading-6 text-stone-950 text-shadow-xs">Ekspertów czuwających nad smakiem</dt>
+          <dd className="text-3xl font-poppins-bold font-bold text-red-700 text-shadow-xs">2</dd>
+          </div>
+        </dl>
+        <p className="font-poppins-bold text-lg text-shadow-xs text-center py-3">Każda liczba to dowód na nasze zaangażowanie i pasję! Zamów i bądź częścią tej wyjątkowej historii!</p>
+        <div className="flex justify-center items-center py-3">
+          <Button>Zamów już teraz</Button>
+        </div>
+
       </div>
 
 
