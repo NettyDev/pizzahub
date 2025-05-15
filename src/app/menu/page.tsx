@@ -9,6 +9,8 @@ import { Info, Plus } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
+import { Select } from "@/components/ui/select";
 
 const menu = [
   {
@@ -104,57 +106,98 @@ const menu = [
 ];
 
 export default function Menu() {
+  const [spice, setSpice] = useState<string[]>([]);
+  const allIngredients = () => {
+    const ingredients: string[] = [];
+    menu.forEach((v) => {
+      v.ingredients.forEach((ing) => {
+        if (ingredients.find((f) => f == ing)) return;
+        ingredients.push(ing);
+      });
+    });
+    return ingredients;
+  };
   return (
     <>
       <MenuComp />
-      <div className="w-auto flex justify-center h-50 items-center bg-[url(/menu.jpg)] bg-cover">
-        <h1 className="flex text-6xl text-white ">Menu</h1>
-      </div>
-      <div className="w-full flex justify-center">
-        <div className="w-200 flex flex-wrap">
-          {menu.map((v) => (
-            <div className="w-1/3">
-              <Card className="m-4">
-                <CardHeader>
-                  <CardTitle>{v.name}</CardTitle>
-                  {/* <CardDescription>test</CardDescription> */}
-                </CardHeader>
-                <CardContent>
-                  <img src="/pizza-placeholder.png" width="100%" alt="" />
-                </CardContent>
-                <CardFooter className="flex justify-end gap-2 w-auto">
-                  <h3 className="justify-self-start">Od {v.price.small} zł</h3>
-                  <Button size="icon">
-                    <Plus />
-                  </Button>
-                  <Popover>
-                    <PopoverTrigger>
-                      <Button size="icon">
-                        <Info />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-end gap-1 leading-3">
-                          <p>Ostrość:</p> <SpiceMeter level={v.spice} />
-                        </div>
-                        <div>
-                          <p>Składniki:</p>
-                          <ul className="list-['-'] pl-4">
-                            {v.ingredients.map((v) => (
-                              <li className="pl-1">{v}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </CardFooter>
-              </Card>
+      <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
+        <div className="bg-white w-5xl shadow-2xl">
+          <div className="w-auto flex justify-end px-10 text-shadow-accent h-50 items-center bg-[url(/menu.jpg)] bg-cover">
+            <h1 className="flex text-8xl text-white ">Menu</h1>
+          </div>
+          <div className="w-full flex justify-end">
+            <select
+              multiple
+              value={spice}
+              onChange={(event) => {
+                const options = [...event.target.selectedOptions];
+                const values = options.map((option) => option.value);
+                setSpice(values);
+              }}
+            >
+              {allIngredients().map((v, i) => (
+                <option key={i}>{v}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full flex justify-center">
+            <div className="w-full px-8 flex flex-wrap">
+              {menu
+                .filter((v) => {
+                  if (spice.length) {
+                    let isAll = true;
+                    spice.forEach((s) => {
+                      if (!v.ingredients.includes(s)) isAll = false;
+                    });
+                    return isAll;
+                  } else return true;
+                })
+                .map((v, i) => (
+                  <div className="w-1/4" key={i}>
+                    <Card className="m-4">
+                      <CardHeader>
+                        <CardTitle>{v.name}</CardTitle>
+                        {/* <CardDescription>test</CardDescription> */}
+                      </CardHeader>
+                      <CardContent>
+                        <img src="/pizza-placeholder.png" width="100%" alt="" />
+                      </CardContent>
+                      <CardFooter className="flex justify-end gap-2 w-auto">
+                        <h3 className="justify-self-start">Od {v.price.small} zł</h3>
+                        <Button size="icon">
+                          <Plus />
+                        </Button>
+                        <Popover>
+                          <PopoverTrigger>
+                            <Button size="icon">
+                              <Info />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex items-end gap-1 leading-3">
+                                <p>Ostrość:</p> <SpiceMeter level={v.spice} />
+                              </div>
+                              <div>
+                                <p>Składniki:</p>
+                                <ul className="list-['-'] pl-4">
+                                  {v.ingredients.map((v) => (
+                                    <li className="pl-1">{v}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
