@@ -1,0 +1,26 @@
+services:
+  database:
+    image: "postgres:17-alpine"
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 15433:80
+    depends_on:
+      - database
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mail@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+
+  adminer:
+    image: adminer:5-standalone
+    ports:
+      - 18080:8080
+    depends_on:
+      - database
+    environment:
+      ADMINER_DEFAULT_SERVER: database
