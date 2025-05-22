@@ -1,4 +1,4 @@
-import Menu from "@/components/Menu";
+import Menu from "@/components/MenuAtTop";
 
 export default function Contact() {
   return (

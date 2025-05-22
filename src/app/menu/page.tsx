@@ -1,7 +1,7 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import MenuComp from "@/components/Menu";
+import MenuComp from "@/components/MenuAtTop";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import { Select } from "@/components/ui/select";
 
-const menu = [
+const menuItemsData = [
   {
     name: "Onuris",
     spice: 1,
@@ -105,11 +105,12 @@ const menu = [
   }
 ];
 
-export default function Menu() {
+
+export default function FoodMenu() {
   const [spice, setSpice] = useState<string[]>([]);
   const allIngredients = () => {
     const ingredients: string[] = [];
-    menu.forEach((v) => {
+    menuItemsData.forEach((v) => {
       v.ingredients.forEach((ing) => {
         if (ingredients.find((f) => f == ing)) return;
         ingredients.push(ing);
@@ -142,7 +143,7 @@ export default function Menu() {
           </div>
           <div className="w-full flex justify-center">
             <div className="w-full px-8 flex flex-wrap">
-              {menu
+              {menuItemsData
                 .filter((v) => {
                   if (spice.length) {
                     let isAll = true;
@@ -164,7 +165,7 @@ export default function Menu() {
                       </CardContent>
                       <CardFooter className="flex justify-end gap-2 w-auto">
                         <h3 className="justify-self-start">Od {v.price.small} zł</h3>
-                        <Button size="icon">
+                        <Button size="icon" onClick={() => onAddToCart(v.name)}>
                           <Plus />
                         </Button>
                         <Popover>
