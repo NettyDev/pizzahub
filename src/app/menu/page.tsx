@@ -1,19 +1,14 @@
 "use client";
 
-import { Switch } from "@/components/ui/switch";
-import MenuComp from "@/components/MenuAtTop";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { CircleSlash, CircleSlash2, Flame, Info, Pizza, Plus } from "lucide-react";
+import { CircleSlash, Flame, Info, Plus } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
-import { Select } from "@/components/ui/select";
 import clsx from "clsx";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { Form, FormField } from "@/components/ui/form";
 
@@ -110,14 +105,11 @@ const menuItemsData = [
   }
 ];
 
-
-
 export default function Menu() {
   const [isHover, setHover] = useState<boolean>(false);
   const [spiceHover, setSpiceHover] = useState<number>(0);
   const [spiceLevel, setSpiceLevel] = useState<number>(0);
   const [ingredientsList, setIngredientsList] = useState<string[]>([]);
-  const [spice, setSpice] = useState<string[]>([]);
   const allIngredients = () => {
     const ingredients: string[] = [];
     menuItemsData.forEach((v) => {
@@ -143,27 +135,11 @@ export default function Menu() {
   });
   return (
     <>
-      <MenuComp />
       <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
         <div className="bg-white w-5xl shadow-2xl">
           <div className="w-auto flex justify-end px-10 text-shadow-accent h-50 items-center bg-[url(/menu.jpg)] bg-cover">
             <h1 className="flex text-8xl text-white ">Menu</h1>
           </div>
-          {/* <div className="w-full flex justify-end">
-            <select
-              multiple
-              value={spice}
-              onChange={(event) => {
-                const options = [...event.target.selectedOptions];
-                const values = options.map((option) => option.value);
-                setSpice(values);
-              }}
-            >
-              {allIngredients().map((v, i) => (
-                <option key={i}>{v}</option>
-              ))}
-            </select>
-          </div> */}
           <div className="w-full flex">
             <div className="w-1/4">
               <div className="w-full border rounded-2xl shadow-xl m-4 flex flex-col p-4">
@@ -231,7 +207,7 @@ export default function Menu() {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id={v}
-                              value={field.value}
+                              checked={field.value}
                               onCheckedChange={(checked) => field.onChange(checked)}
                             />
                             <label htmlFor={v}>{v[0].toUpperCase() + v.slice(1)}</label>
@@ -246,7 +222,7 @@ export default function Menu() {
             <div className="w-3/4">
               <div className="w-full flex justify-center">
                 <div className="w-full px-8 flex flex-wrap">
-                  {menu
+                  {menuItemsData
                     .filter((v) => {
                       if (ingredientsList.length) {
                         let isAll = true;
@@ -309,7 +285,6 @@ export default function Menu() {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

@@ -1,9 +1,6 @@
-import Menu from "@/components/MenuAtTop";
-
 export default function Contact() {
   return (
     <>
-      <Menu />
       <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-20 lg:px-8">
         <div className="max-w-2xl lg:max-w-4xl mx-auto text-center">
           <h2 className="font-poppins bold font-extrabold text-3xl text-red-700 text-shadow-xs">Odwiedź nas</h2>

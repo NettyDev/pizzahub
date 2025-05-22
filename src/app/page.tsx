@@ -1,5 +1,3 @@
-import Menu from "@/components/MenuAtTop";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -7,13 +5,11 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 export default function Home() {
   return (
     <>
-      <Menu />
       <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
         <div className="bg-white w-5xl shadow-2xl">
           <MainPage />
         </div>
       </div>
-      <Footer />
     </>
   );
 }

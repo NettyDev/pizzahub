@@ -12,12 +12,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "./ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import LoginDialog from "./LoginDialog";
 import RegisterDialog from "./RegisterDialog";
 import { toast } from "sonner";
 
-export default function Menu() {
+export default function Header() {
   const { data: session, isPending, error, refetch } = authClient.useSession();
   useEffect(() => {
     console.log(session);
