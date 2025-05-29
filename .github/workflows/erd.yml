@@ -1,0 +1,28 @@
+name: Generate ERD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - prisma/schema.prisma
+    workflow_dispatch:
+
+jobs:
+  build:
+    name: LiamERD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          node-version: 22.x
+      - name: Install Liam ERD CLI
+        run: bun i -g @liam-hq/cli
+      - name: Generate ERD
+        run: liam erd build --input ./prisma/schema.prisma --format=prisma --output-dir dist-erd
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PizzaHub-ERD
+          path: dist-erd
