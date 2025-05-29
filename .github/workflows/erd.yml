@@ -15,8 +15,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Use Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          node-version: 22.x
       - name: Install Liam ERD CLI
         run: bun i -g @liam-hq/cli
       - name: Generate ERD
