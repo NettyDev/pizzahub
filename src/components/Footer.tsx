@@ -10,63 +10,53 @@ export default function Footer() {
               <img src="/logo.svg" width={150} alt="" />
             </a>
             <div className="mt-6 lg:max-w-sm">
-              <p className="text-sm text-gray-800">
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque
-                sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor.
-                Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia
-                integer nunc posuere.
+              <p className="text-sm font-poppins-bold">
+                Witaj w PizzaHub! Jesteśmy pasjonatami doskonałego smaku i świeżych składników.<br/>
+                Każda nasza pizza to historia opowiedziana na chrupiącym cieście, z miłością do tradycji i odrobiną nowoczesnej fantazji. Zapraszamy do odkrywania naszych specjałów!
               </p>
-              <p className="mt-4 text-sm text-gray-800">
-                Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos
-                himenaeos.
-              </p>
+
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            <p className="text-base font-bold tracking-wide text-gray-900">Kontakt</p>
+            <p className="text-base font-bold font-poppins-bold tracking-wide">Kontakt</p>
             <div className="flex">
-              <p className="mr-1 text-gray-800">Telefon:</p>
-              <p className="transition-colors duration-300 text-deep-red-accent-400 hover:text-deep-red-800">
+              <p className="mr-1 font-poppins-bold">Telefon:</p>
+              <p>
                 111-222-333
               </p>
             </div>
             <div className="flex">
-              <p className="mr-1 text-gray-800">E-mail:</p>
-              <p className="transition-colors duration-300 text-deep-red-accent-400 hover:text-deep-red-800">
+              <p className="mr-1 font-poppins-bold">E-mail:</p>
+              <p>
                 pizzahub@pizzahub.com
               </p>
             </div>
             <div className="flex">
-              <p className="mr-1 text-gray-800">Adres:</p>
-              <p className="transition-colors duration-300 text-deep-red-accent-400 hover:text-deep-red-800">
+              <p className="mr-1 font-poppins-bold">Adres:</p>
+              <p>
                 Ćwiartki 3/4
               </p>
             </div>
           </div>
           <div>
-            <span className="text-base font-bold tracking-wide text-gray-900">Media społecznościowe</span>
+            <span className="font-bold tracking-wide font-poppins-bold">Media społecznościowe</span>
             <div className="flex items-center mt-1 space-x-3">
-              <a href="/" className="text-gray-500 transition-colors duration-300 hover:text-deep-purple-accent-400">
-                <Twitter className="h-5"></Twitter>
-              </a>
-              <a href="/" className="text-gray-500 transition-colors duration-300 hover:text-deep-purple-accent-400">
-                <Instagram className="h-5"></Instagram>
-              </a>
-              <a href="/" className="text-gray-500 transition-colors duration-300 hover:text-deep-purple-accent-400">
-                <Facebook className="h-5"></Facebook>
-              </a>
+                <Twitter className="h-5 text-red-700"></Twitter>
+                <Instagram className="h-5 text-red-700"></Instagram>
+                <Facebook className="h-5 text-red-700"></Facebook>
+
             </div>
           </div>
         </div>
         <div className="flex flex-col-reverse justify-between pt-5 pb-10 border-t lg:flex-row">
-          <p className="text-sm text-gray-600">© Copyright 2020 Lorem Inc. All rights reserved.</p>
-          <p className="text-sm text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400">
+          <p className="text-sm text-gray-600">© Copyright 2025 Lorem Inc. All rights reserved.</p>
+          <p className="text-sm text-gray-600">
             F.A.Q
           </p>
-          <p className="text-sm text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400">
+          <p className="text-sm text-gray-600">
             Polityka Prywatności
           </p>
-          <p className="text-sm text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400">
+          <p className="text-sm text-gray-600">
             Terms
           </p>
         </div>

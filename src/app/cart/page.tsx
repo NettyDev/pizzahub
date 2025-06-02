@@ -196,7 +196,7 @@ function Cart() {
 
 
           <div className="w-full lg:w-[40%] xl:w-1/3">
-            <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 border-2 border-red-600 lg:sticky lg:top-40">
+            <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 border-2 border-red-600 lg:sticky lg:top-46">
               <h2 className="text-xl sm:text-2xl font-bold font-poppins-bold text-red-700 tracking-wide mb-6 text-center">
                 Twoje zamówienie
               </h2>

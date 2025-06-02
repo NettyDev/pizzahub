@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -119,14 +120,6 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-@font-face {
-  font-family: poppins-bold;
-  font-style: normal;
-  font-weight: 200 700;
-  font-display: swap;
-  src: url("/poppins.bold.ttf") format("ttf");
 }
 
 html, body {

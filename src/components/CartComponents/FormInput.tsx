@@ -24,7 +24,7 @@ export default function FormInput({
 }: FormInputProps) {
   return (
     <div className={cn("flex flex-col w-full", className)}>
-      <Label htmlFor={id} className="font-poppins-bold mb-1.5 text-sm text-stone-700">
+      <Label htmlFor={id} className="font-poppins-bold mb-1.5 text-sm text-shadow-xs">
         {label} {required && <span className="text-red-500">*</span>}
       </Label>
       <input
