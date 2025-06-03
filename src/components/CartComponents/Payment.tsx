@@ -29,11 +29,11 @@ export default function PaymentMethod() {
                 <div>
                     <Label
                     htmlFor={`pay-${option.value}`}
-                    className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer"
+                    className="text-sm font-semibold tracking-tightcursor-pointer"
                     >
                     {option.label}
                     </Label>
-                    <p className="text-xs text-stone-600 mt-0.5">{option.description}</p>
+                    <p className="text-xs mt-0.5">{option.description}</p>
                 </div>
                 </RadioGroupItem>
             ))}

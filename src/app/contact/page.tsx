@@ -17,7 +17,7 @@ function Contact() {
   return (
     <>
       <div className="bg-red-700 text-white text-center py-12 sm:py-16 px-4 sm:px-6 shadow-lg">
-        <h2 className="font-poppins font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight">
+        <h2 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight">
           Odwiedź nas lub skontaktuj się!
         </h2>
         <p className="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
@@ -45,9 +45,9 @@ function Contact() {
               <div className="bg-stone-50 rounded-xl shadow-lg p-6 border border-stone-200">
                 <div className="flex items-center mb-3">
                   <MapPin className="h-6 w-6 text-red-700 mr-3"></MapPin>
-                  <h3 className="font-poppins-bold text-xl font-bold text-stone-900">Nasz adres</h3>
+                  <h3 className="text-xl font-bold">Nasz adres</h3>
                 </div>
-                <p className="font-poppins text-stone-700 text-base pl-9">
+                <p className="text-base pl-9">
                   Ćwiartki 3/4<br />
                   Polska
                 </p>
@@ -56,9 +56,9 @@ function Contact() {
               <div className="bg-stone-50 rounded-xl shadow-lg p-6 border border-stone-200">
                 <div className="flex items-center mb-3">
                   <Clock className="h-6 w-6 text-red-700 mr-3"></Clock>
-                  <h3 className="font-poppins-bold text-xl font-bold text-stone-900">Godziny otwarcia</h3>
+                  <h3 className="text-xl font-bold">Godziny otwarcia</h3>
                 </div>
-                <div className="font-poppins text-stone-700 text-base pl-9">
+                <div className="text-base pl-9">
                   <p>Poniedziałek - Piątek: <strong>12:00 - 22:00</strong></p>
                   <p className="mt-1">Sobota - Niedziela: <strong>12:00 - 02:00</strong></p>
                 </div>
@@ -67,9 +67,9 @@ function Contact() {
               <div className="bg-stone-50 rounded-xl shadow-lg p-6 border border-stone-200">
                 <div className="flex items-center mb-3">
                   <Phone className="h-6 w-6 text-red-700 mr-3"></Phone>
-                  <h3 className="font-poppins-bold text-xl font-bold text-stone-900">Skontaktuj się</h3>
+                  <h3 className="text-xl font-bold">Skontaktuj się</h3>
                 </div>
-                <div className="font-poppins text-stone-700 text-base pl-9">
+                <div className="text-base pl-9">
                   <p>
                     Telefon: <a href="tel:111222333" className="text-red-600 hover:text-red-700 font-semibold">111-222-333</a>
                   </p>

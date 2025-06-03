@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Settings from "@/components/ProfileComponents/Settings";
 import Orders from "@/components/ProfileComponents/Orders";
 import UserAvatar from "@/components/UserAvatar";
+import StatsComponent from "@/components/ProfileComponents/StatsComponent";
 
 const tabs = [
   {
@@ -23,7 +24,7 @@ const tabs = [
     name: "Statystyki",
     value: "stats",
     icon: Sparkles,
-    // content: StatsComponent,
+    content: StatsComponent,
   }
 ];
 
@@ -47,10 +48,10 @@ function Profile() {
 
           <div className="w-full md:w-auto md:min-w-[260px] lg:min-w-[300px] flex flex-col gap-6 md:gap-8 mb-6 md:mb-0">
             <div className="flex items-center gap-4 p-2 md:p-0">
-              <UserAvatar user={{ name: imie }} />
+              <UserAvatar user={{ name: imie, image: null }} className="h-14 w-14 sm:h-16 sm:w-16"/>
               <div className="flex flex-col min-w-0">
-                <span className="text-sm text-stone-600 text-shadow-xs font-poppins-bold">Cześć,</span>
-                <span className="text-lg sm:text-xl font-semibold text-stone-800 text-shadow-xs font-poppins-bold leading-tight truncate">
+                <span className="text-sm text-shadow-xs">Cześć,</span>
+                <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">
                   {imie}
                 </span>
               </div>
@@ -65,13 +66,14 @@ function Profile() {
                   className={cn(
                     "flex items-center justify-start text-left w-full group",
                     "gap-2.5 px-3 py-2.5 text-sm font-medium",
-                    "text-stone-600 hover:bg-stone-100 hover:text-red-700",
+                    "hover:bg-stone-100",
                     "data-[state=active]:bg-red-100 data-[state=active]:text-red-700 data-[state=active]:font-semibold data-[state=active]:shadow-sm",
                     "rounded-md transition-colors duration-150",
                     "border-l-2 border-transparent",
                     "data-[state=active]:border-l-red-600",
                     "focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   )}
+                  disabled={!tab.content}
                 >
                   <tab.icon className="h-5 w-5 shrink-0" />
                   <span className="truncate">
@@ -83,13 +85,15 @@ function Profile() {
           </div>
           <div className="flex-1 min-w-0 ">
             {tabs.map((tab) => (
-              <TabsContent
-                key={tab.value}
-                value={tab.value}
-                className="mt-0"
-              >
-                {typeof tab.content === 'function' ? <tab.content /> : tab.content || <div >Domyślna zawartość dla {tab.name}</div>}
-              </TabsContent>
+              tab.content ? (
+                <TabsContent
+                  key={tab.value}
+                  value={tab.value}
+                  className="mt-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                >
+                  {typeof tab.content === 'function' ? <tab.content /> : <div className="p-6">{tab.content}</div>}
+                </TabsContent>
+              ) : null
             ))}
           </div>
 

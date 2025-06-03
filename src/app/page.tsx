@@ -18,123 +18,141 @@ export default function Home() {
 function MainPage() {
   return (
     <>
-      <div className="flex flex-col md:flex-row w-full items-center px-4 pt-8 pb-4 sm:pt-12 sm:pb-6">
-        <div className="flex flex-col w-full md:w-2/3 md:pr-8 gap-4 text-center md:text-left">
-          <div className="flex justify-center md:justify-start">
-            <h1 className="font-[poppins] font-bold text-shadow-xs text-3xl sm:text-4xl lg:text-5xl text-transparent bg-gradient-to-r from-red-700 to-stone-950 bg-clip-text leading-tight lg:leading-normal">
-              Twoja pizza czeka,
-              <br /> zamów ją <i>natychmiast</i>!
-            </h1>
-          </div>
-          <div>
-            <p className="font-[poppins] text-base font-bold sm:text-lg lg:text-xl text-shadow-xs">
-              Gorąca, pachnąca, gotowa do schrupania - nie każ jej czekać, zamów już teraz!
-            </p>
-          </div>
-          <div className="mt-4 flex justify-center md:justify-start">
-            <Link href="/menu">
-              <Button className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200">
-                Zamów
+      <section className="flex flex-col md:flex-row w-full items-center px-6 lg:px-10 pt-10 pb-8 sm:pt-16 sm:pb-12">
+        <div className="flex flex-col w-full md:w-3/5 md:pr-10 lg:pr-16 gap-5 text-center md:text-left">
+          <h1 className="font-extrabold text-4xl sm:text-5xl lg:text-6xl text-transparent bg-gradient-to-r from-red-700 to-neutral-950 bg-clip-text leading-tight lg:leading-snug drop-shadow-sm">
+            Twoja pizza czeka,
+            <br /> zamów ją <i>natychmiast</i>!
+          </h1>
+          
+          <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed">
+            Gorąca, pachnąca, gotowa do schrupania - nie każ jej czekać, zamów już teraz!
+          </p>
+          
+          <div className="mt-6 flex justify-center md:justify-start">
+            <Link href="/menu" passHref>
+              <Button 
+                size="lg"
+                className="px-10 py-3 bg-red-600 text-white text-base sm:text-lg rounded-lg shadow-lg hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                Zobacz menu i zamów
               </Button>
             </Link>
           </div>
         </div>
 
-        <div className="flex w-full md:w-1/3 justify-center items-center mt-8 md:mt-0">
-          <img src="/pizza_time.png" alt="Pyszna pizza gotowa do zamówienia" className="w-3/4 sm:w-2/3 md:w-full max-w-xs sm:max-w-sm md:max-w-md" />
+        <div className="flex w-full md:w-2/5 justify-center items-center mt-10 md:mt-0">
+          <img 
+            src="/pizza_time.png" 
+            alt="Pyszna pizza gotowa do zamówienia" 
+            className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl"
+          />
         </div>
+      </section>
+
+
+      <div className="flex w-full justify-center items-center h-14 sm:h-16 bg-red-700 text-white shadow-md my-8 sm:my-12">
+        <p className="font-extrabold text-2xl sm:text-3xl tracking-wider">RANKING PIZZ</p>
       </div>
 
-      <div className="flex w-full justify-center items-center h-10 sm:h-12 bg-[url(/label_background.png)] bg-cover shadow-sm my-6 sm:my-8">
-        <p className="font-[poppins] text-shadow-xs text-2xl sm:text-3xl text-white font-extrabold">RANKING</p>
-      </div>
+      <section className="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto">
+            <h2 className="font-bold text-3xl sm:text-4xl text-red-700 text-center mb-8 sm:mb-10">
+                TOP MIESIĄCA
+            </h2>
+            <div className="p-2 sm:p-5 w-full">
+            <Ranking /> 
+            </div>
+        </div>
+      </section>
 
-      <div className="flex w-full flex-row bg-[url(/bg.png)] bg-repeat bg-size-[64px]">
-        <div className="flex flex-col items-center w-full px-2 sm:px-5 py-6 sm:py-8">
-          <h2 className="font-[poppins] font-bold text-shadow-xs text-2xl sm:text-3xl text-red-700 text-center mb-4 sm:mb-6">
-            TOP MIESIĄCA
-          </h2>
-          <div className="p-2 sm:p-5 w-full">
-            <Ranking />
+      <section className="py-12 sm:py-16 px-4 text-center">
+        <h2 className="font-extrabold text-3xl sm:text-4xl text-red-700 mb-3">
+          STWÓRZ SWOJĄ WYMARZONĄ PIZZĘ
+        </h2>
+        <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
+          Wybierz ciasto, ulubione składniki i sosy - ogranicza Cię tylko wyobraźnia!
+        </p>
+        
+        <div className="relative w-full max-w-2xl mx-auto aspect-[16/9] sm:aspect-[2/1] group">
+          <img 
+            src="/composer_background.png" 
+            alt="Stwórz własną kompozycję pizzy" 
+            className="w-full h-full object-cover rounded-xl shadow-xl" 
+          />
+          <div className="absolute inset-0 bg-black/30 rounded-xl flex items-center justify-center">
+            <Link href="/composer" passHref>
+              <Button 
+                size="lg"
+                className="px-8 py-3 bg-red-600 text-white text-base sm:text-lg rounded-lg shadow-lg hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-200 transform group-hover:scale-110"
+              >
+                Miksuj, komponuj, smakuj!
+              </Button>
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="flex flex-col w-full items-center justify-center mt-8 sm:mt-12 px-4 text-center">
-        <div className="font-[poppins] font-bold text-shadow-xs text-2xl sm:text-3xl text-red-700">
-          <h1>STWÓRZ SWOJĄ ULUBIONĄ PIZZĘ</h1>
+
+      <div className="h-3 sm:h-4 bg-red-700 shadow-sm my-8 sm:my-12"></div>
+
+      <section className="flex flex-col lg:flex-row w-full items-center justify-center px-6 lg:px-10 py-10 sm:py-16 bg-stone-50"> {/* Lekkie tło */}
+        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end mb-10 lg:mb-0 lg:pr-10 xl:pr-16">
+          <img 
+            src="/angel_pizza.png" 
+            alt="Piekielnie dobra pizza" 
+            className="w-full max-w-sm sm:max-w-md md:max-w-lg transform transition-transform duration-500 hover:rotate-[-3deg] hover:scale-105" 
+          />
         </div>
-        <div>
-          <p className="font-[poppins] font-bold text-shadow-xs text-base sm:text-lg pb-6 sm:pb-10 pt-2">
-            Wybierz ciasto, składniki i sosy, takie jakie kochasz.
-          </p>
-        </div>
-      </div>
-
-      <div className="relative w-full flex items-center justify-center px-4 my-6 sm:my-8">
-        <img src="/compose_background.png" alt="Stwórz własną kompozycję pizzy" className="w-full max-w-xl h-auto" />
-        <Button size="lg" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[5%] sm:mt-[3%] md:mt-[2%] px-6 py-3">
-          Miksuj, komponuj, smakuj!
-        </Button>
-      </div>
-
-      <div className="h-5 bg-[url(/label_background.png)] bg-cover shadow-sm my-6 sm:my-8"></div>
-
-      <div className="flex flex-col lg:flex-row w-full items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-start mb-8 lg:mb-0 lg:pr-8">
-          <img src="/angel_pizza.png" alt="Piekielnie dobra pizza" className="w-3/4 sm:w-2/3 md:w-1/2 lg:w-full max-w-xs sm:max-w-sm md:max-w-md" />
-        </div>
-        <div className="w-full lg:w-1/2 text-center lg:text-right">
-          <h1 className="font-[poppins] font-bold text-shadow-xs text-3xl sm:text-4xl lg:text-5xl text-transparent bg-gradient-to-r from-red-700 to-stone-950 bg-clip-text pb-4 sm:pb-6">
+        <div className="w-full lg:w-1/2 text-center lg:text-left">
+          <h2 className="font-extrabold text-4xl sm:text-5xl text-transparent bg-gradient-to-r from-red-700 to-neutral-950 bg-clip-text pb-6 sm:pb-8 drop-shadow-sm">
             Piekielnie dobra, niebiańsko pyszna!
-          </h1>
-          <div className="flex flex-col gap-4 sm:gap-6 font-[poppins] text-shadow-xs text-sm sm:text-base lg:text-lg text-stone-950">
+          </h2>
+          <div className="flex flex-col gap-5 text-base sm:text-lg leading-relaxed sm:leading-loose">
             <p>
-              Nasza pizza powstaje w ogniu prawdziwej pasji - dosłownie i w przenośni! W piecu rozgrzanym do piekelnych
+              Nasza pizza powstaje w ogniu prawdziwej pasji - dosłownie i w przenośni! W piecu rozgrzanym do piekielnych
               temperatur ciasto nabiera idealnej chrupkości, a ser topi się w perfekcyjnej harmonii. Nie uznajemy
               kompromisów - każdy składnik jest wyselekcjonowany z najwyższą troską, tak aby efekt był niebiańsko
               pyszny.
-            </p>
-            <p>
-              Każdy etap to sztuka: od ręcznie wyrabianego ciasta, przez świeże aromatyczne dodatki, aż po idealnie
-              wypieczony placek, który trafia do Twojego pudełka. A gdy pizza jest gotowa, nasi dostawcy działają niczym
-              anielskie posłańcy - szybko, sprawnie i z troską by każda dostawa była jak błogosławieństwo dla Twojego
-              apetytu.
             </p>
             <p>
               Nie ważne, czy jesteś miłośnikiem klasycznych smaków, czy lubisz eksperymentować - u nas każdy znajdzie coś
               dla siebie. Bo dobra pizza powinna rozpalać smakowe zmysły, ale jednocześnie otulać podniebienie jak
               kulinarny raj.
             </p>
-            <p>Niebo i piekło łączą się tu w perfekcyjnej harmonii. Zamów i przekonaj się sam!</p>
+            <p className="font-semibold text-red-700">Niebo i piekło łączą się tu w perfekcyjnej harmonii. Zamów i przekonaj się sam!</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="h-5 bg-[url(/label_background.png)] bg-cover shadow-sm my-6 sm:my-8"></div>
+      <div className="h-3 sm:h-4 bg-red-700 shadow-sm my-8 sm:my-12"></div>
 
-      <div className="px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
-        <div className="text-center">
-          <h2 className="font-[poppins] font-bold text-shadow-xs text-2xl sm:text-3xl text-red-700">
-            Nasze osiągnięcia w liczbach!
-          </h2>
-          <p className="mt-4 text-base sm:text-lg leading-relaxed sm:leading-8 text-stone-950 text-shadow-xs">
-            Jesteśmy dumni z każdej pizzy, którą przygotowaliśmy, każdego zadowolonego klienta, i całego zespołu, który
-            dba o perfekcyjny smak i obsługę!
-          </p>
+      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-16 text-center">
+        <div className="max-w-4xl mx-auto"> 
+            <h2 className="font-bold text-3xl sm:text-4xl text-red-700 mb-4">
+                Nasze osiągnięcia w liczbach!
+            </h2>
+            <p className="mt-2 text-lg sm:text-xl leading-relaxed mb-10">
+                Jesteśmy dumni z każdej pizzy, którą przygotowaliśmy, każdego zadowolonego klienta, i całego zespołu, który
+                dba o perfekcyjny smak i obsługę!
+            </p>
+            <MenuStats/>
+            <p className="text-lg sm:text-xl mt-10 mb-8">
+                Każda liczba to dowód na nasze zaangażowanie i pasję! Zamów i bądź częścią tej wyjątkowej historii!
+            </p>
+            <div className="flex justify-center items-center">
+                <Link href="/menu" passHref>
+                    <Button 
+                        size="lg" 
+                        className="px-10 py-3 bg-red-600 text-white text-base sm:text-lg rounded-lg shadow-lg hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-200 hover:scale-105 active:scale-95"
+                    >
+                        Zamów już teraz
+                    </Button>
+                </Link>
+            </div>
         </div>
-        <MenuStats/>
-        <p className="font-[poppins] text-base sm:text-lg text-shadow-xs text-center py-4 sm:py-6">
-          Każda liczba to dowód na nasze zaangażowanie i pasję! Zamów i bądź częścią tej wyjątkowej historii!
-        </p>
-        <div className="flex justify-center items-center py-3">
-          <Link href="/menu">
-            <Button className="w-full sm:w-auto size-lg bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200">
-              Zamów już teraz
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </section>
+    
     </>
   );
 }

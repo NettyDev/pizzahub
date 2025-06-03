@@ -50,6 +50,9 @@ function Cart() {
   const [contactData, setContactData] = useState<Partial<ContactFormData>>({});
   const [deliveryAddressData, setDeliveryAddressData] = useState<Partial<DeliveryFormData>>({});
 
+  const [termsAccepted, setTermsAccepted] = useState(false);
+// const [newsletterAccepted, setNewsletterAccepted] = useState(false); // Dla drugiego checkboxa, jeśli chcesz śledzić jego stan
+
   const [cartItems, setCartItems] = useState<CartItem[]>([
       { id: 1, name: "Pizza Hawajska", quantity: 1, pricePerUnit: 80.00 },
       { id: 2, name: "Coca-Cola 0.5l", quantity: 2, pricePerUnit: 5.00 },
@@ -62,6 +65,23 @@ function Cart() {
     total: 0,
     deliveryInfo: ""
   });
+
+const handleRemoveItemFromCart = (itemId: number) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+};
+
+const handleUpdateItemQuantity = (itemId: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+        handleRemoveItemFromCart(itemId);
+    } else {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+                item.id === itemId ? { ...item, quantity: newQuantity } : item
+            )
+        );
+    }
+};
+
 
   useEffect(() => {
     const newSubTotal = cartItems.reduce((sum, item) => sum + (item.pricePerUnit * item.quantity), 0);
@@ -95,7 +115,7 @@ function Cart() {
   return (
     <>
       <div className="bg-red-700 text-white text-center py-8 sm:py-10 px-4 sm:px-6 shadow-md">
-        <h2 className="font-poppins font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight">
+        <h2 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight">
           Twój koszyk
         </h2>
       </div>
@@ -103,7 +123,7 @@ function Cart() {
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 xl:gap-16">
           <div className="w-full lg:w-[60%] xl:w-2/3 flex flex-col gap-8">
             <section className="bg-white rounded-lg shadow-lg p-6 sm:p-8 border border-stone-200">
-              <h2 className="font-poppins-bold text-xl sm:text-2xl mb-6 text-stone-700 text-shadow-xs">Płatność</h2>
+              <h2 className="text-xl sm:text-2xl mb-6 text-shadow-xs">Płatność</h2>
               <PaymentMethod/>
             </section>
 
@@ -130,7 +150,7 @@ function Cart() {
               <ContactForm />
                 
                 <div className="mt-8 pt-6 border-t border-stone-200">
-                    <h3 className="font-poppins-bold text-lg mb-4 text-stone-700 text-shadow-xs">Dokument sprzedaży</h3>
+                    <h3 className="text-lg mb-4 text-shadow-xs">Dokument sprzedaży</h3>
                     <RadioGroup
                     defaultValue="paragon"
                     onValueChange={(value) => setShowInvoiceFields(value === "faktura")}
@@ -142,7 +162,7 @@ function Cart() {
                             id="paragon"
                             className="h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
                         />
-                        <Label htmlFor="paragon" className="font-poppins text-sm text-stone-700 cursor-pointer">Paragon</Label>
+                        <Label htmlFor="paragon" className="text-sm cursor-pointer">Paragon</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem
@@ -150,7 +170,7 @@ function Cart() {
                             id="faktura"
                             className="h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
                         />
-                        <Label htmlFor="faktura" className="font-poppins text-sm text-stone-700 cursor-pointer">Faktura VAT</Label>
+                        <Label htmlFor="faktura" className="text-sm cursor-pointer">Faktura VAT</Label>
                     </div>
                     </RadioGroup>
                 </div>
@@ -166,7 +186,7 @@ function Cart() {
                 <div className="mt-8 pt-6 border-t border-stone-200">
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="comment" className="border-b-0">
-                            <AccordionTrigger className="font-poppins-bold text-stone-700 hover:no-underline text-base py-3 group">
+                            <AccordionTrigger className="hover:no-underline text-base py-3 group">
                                 Dodaj komentarz do zamówienia (opcjonalnie)
                                 <Plus className="h-5 w-5 ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180"/>
                             </AccordionTrigger>
@@ -178,29 +198,43 @@ function Cart() {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-stone-200 space-y-5">
-                    <div className="flex items-start space-x-3">
-                        <Checkbox id="terms" className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"/>
-                        <Label htmlFor="terms" className="text-xs sm:text-sm text-stone-600 leading-snug cursor-pointer">
-                            Akceptuję postanowienia Regulaminu i Polityki Prywatności (wymagane)
-                        </Label>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                        <Checkbox id="terms2" className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"/>
-                        <Label htmlFor="terms2" className="text-xs sm:text-sm text-stone-600 leading-snug cursor-pointer">
-                            Chcę otrzymywać informacje o promocjach i nowościach na email (opcjonalne)
-                        </Label>
-                    </div>
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="terms"
+                      checked={termsAccepted}
+                      onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                      className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                    />
+                    <Label htmlFor="terms" className="text-xs sm:text-sm leading-snug cursor-pointer">
+                      Akceptuję postanowienia Regulaminu i Polityki Prywatności (wymagane)
+                    </Label>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="terms2"
+                      // checked={newsletterAccepted}
+                      // onCheckedChange={(checked) => setNewsletterAccepted(checked as boolean)}
+                      className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                    />
+                    <Label htmlFor="terms2" className="text-xs sm:text-sm leading-snug cursor-pointer">
+                      Chcę otrzymywać informacje o promocjach i nowościach na email (opcjonalne)
+                    </Label>
+                  </div>
                 </div>
             </section>
           </div>
 
 
-          <div className="w-full lg:w-[40%] xl:w-1/3">
+          <div className="w-full lg:w-[50%] xl:w-3/7">
             <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 border-2 border-red-600 lg:sticky lg:top-46">
-              <h2 className="text-xl sm:text-2xl font-bold font-poppins-bold text-red-700 tracking-wide mb-6 text-center">
+              <h2 className="text-xl sm:text-2xl font-bold text-red-700 tracking-wide mb-6 text-center">
                 Twoje zamówienie
               </h2>
-              <Summary summaryData={summaryData} />
+              <Summary
+                summaryData={summaryData}
+                onRemoveItem={handleRemoveItemFromCart}
+                onUpdateQuantity={handleUpdateItemQuantity}
+              />
             </div>
           </div>
         </div>

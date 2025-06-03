@@ -10,7 +10,7 @@ export default function Footer() {
               <img src="/logo.svg" width={150} alt="" />
             </a>
             <div className="mt-6 lg:max-w-sm">
-              <p className="text-sm font-poppins-bold">
+              <p className="text-sm">
                 Witaj w PizzaHub! Jesteśmy pasjonatami doskonałego smaku i świeżych składników.<br/>
                 Każda nasza pizza to historia opowiedziana na chrupiącym cieście, z miłością do tradycji i odrobiną nowoczesnej fantazji. Zapraszamy do odkrywania naszych specjałów!
               </p>
@@ -18,28 +18,28 @@ export default function Footer() {
             </div>
           </div>
           <div className="space-y-2 text-sm">
-            <p className="text-base font-bold font-poppins-bold tracking-wide">Kontakt</p>
+            <p className="text-base font-bold tracking-wide">Kontakt</p>
             <div className="flex">
-              <p className="mr-1 font-poppins-bold">Telefon:</p>
+              <p className="mr-1">Telefon:</p>
               <p>
                 111-222-333
               </p>
             </div>
             <div className="flex">
-              <p className="mr-1 font-poppins-bold">E-mail:</p>
+              <p className="mr-1">E-mail:</p>
               <p>
                 pizzahub@pizzahub.com
               </p>
             </div>
             <div className="flex">
-              <p className="mr-1 font-poppins-bold">Adres:</p>
+              <p className="mr-1">Adres:</p>
               <p>
                 Ćwiartki 3/4
               </p>
             </div>
           </div>
           <div>
-            <span className="font-bold tracking-wide font-poppins-bold">Media społecznościowe</span>
+            <span className="font-bold tracking-wide">Media społecznościowe</span>
             <div className="flex items-center mt-1 space-x-3">
                 <Twitter className="h-5 text-red-700"></Twitter>
                 <Instagram className="h-5 text-red-700"></Instagram>

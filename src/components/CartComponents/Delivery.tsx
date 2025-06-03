@@ -55,7 +55,7 @@ const handleDateSelect = (date: Date | undefined) => {
   return (
     <>
       <div>
-        <h2 className="font-poppins-bold text-lg sm:text-xl mb-4 text-stone-700 text-shadow-xs">Sposób dostarczenia</h2>
+        <h2 className="text-lg sm:text-xl mb-4 text-shadow-xs">Sposób dostarczenia</h2>
         <RadioGroup
           value={selectedDeliveryMethod}
           onValueChange={(value) => {
@@ -76,14 +76,14 @@ const handleDateSelect = (date: Date | undefined) => {
             >
               <CircleCheck className="absolute top-2.5 right-2.5 h-5 w-5 text-red-600 fill-white group-data-[state=unchecked]:hidden" />
               <Truck className="mb-2 h-7 w-7 text-stone-500" />
-              <Label htmlFor={`delivery-${option.value}`} className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer">{option.label}</Label>
+              <Label htmlFor={`delivery-${option.value}`} className="text-sm font-semibold tracking-tight cursor-pointer">{option.label}</Label>
             </RadioGroupItem>
           ))}
         </RadioGroup>
       </div>
 
       <div>
-        <h2 className="font-poppins-bold text-lg sm:text-xl mb-4 text-stone-700 text-shadow-xs">Termin realizacji</h2>
+        <h2 className="text-lg sm:text-xl mb-4 text-shadow-xs">Termin realizacji</h2>
         <RadioGroup
           value={selectedDeliveryTime}
           onValueChange={(value) => {
@@ -114,7 +114,7 @@ const handleDateSelect = (date: Date | undefined) => {
             >
               <CircleCheck className="absolute top-2.5 right-2.5 h-5 w-5 text-red-600 fill-white group-data-[state=unchecked]:hidden" />
               <CalendarIconLucide className="mb-2 h-7 w-7 text-stone-500" />
-              <Label htmlFor={`time-${option.value}`} className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer">{option.label}</Label>
+              <Label htmlFor={`time-${option.value}`} className="text-sm font-semibold tracking-tight cursor-pointer">{option.label}</Label>
             </RadioGroupItem>
           ))}
         </RadioGroup>
@@ -126,7 +126,7 @@ const handleDateSelect = (date: Date | undefined) => {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-poppins font-normal border-stone-300 hover:border-stone-400 text-sm h-11",
+                    "w-full justify-start text-left font-normal border-stone-300 hover:border-stone-400 text-sm h-11",
                     !selectedDate && "text-stone-500"
                   )}
                 >
@@ -150,12 +150,12 @@ const handleDateSelect = (date: Date | undefined) => {
             </Popover>
             {selectedDate && (
                 <Select value={selectedHour} onValueChange={setSelectedHour}>
-                <SelectTrigger className="w-full border-stone-300 hover:border-stone-400 text-sm h-11 font-poppins">
+                <SelectTrigger className="w-full border-stone-300 hover:border-stone-400 text-sm h-11">
                     <SelectValue placeholder="Wybierz godzinę" />
                 </SelectTrigger>
                 <SelectContent className="bg-white shadow-xl rounded-md border border-stone-200 z-50">
                     {available_hours.map(hour => (
-                    <SelectItem key={hour} value={hour} className="font-poppins text-sm">
+                    <SelectItem key={hour} value={hour} className="text-sm">
                         {hour}
                     </SelectItem>
                     ))}

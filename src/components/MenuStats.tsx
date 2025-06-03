@@ -35,7 +35,7 @@ export default function MenuStats() {
           <dt className="text-sm font-semibold leading-6 text-stone-950 text-shadow-xs sm:text-base">
             {stat.label}
           </dt>
-          <dd className="order-first text-3xl font-poppins-bold font-bold tracking-tight text-red-700 text-shadow-xs sm:text-4xl">
+          <dd className="order-first text-3xl font-bold tracking-tight text-red-700 text-shadow-xs sm:text-4xl">
             <AnimatedCounter targetValue={stat.value} duration={2500} startOnVisible={true} />
             { <span>{stat.suffix}</span>}
           </dd>

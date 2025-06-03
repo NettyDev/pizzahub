@@ -1,0 +1,216 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator"; 
+import { Pizza, Star, LoaderCircle, TrendingUp, Clock, ChefHat, CheckCircle, DollarSign, UtensilsCrossed } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { cn } from "@/lib/utils";
+
+
+interface OrderItemStats {
+  name: string;
+  quantity: number;
+  totalSpent: number;
+  averageRating?: number;
+  count: number;
+}
+
+interface UserStatsData {
+  totalOrders: number;
+  totalPizzasOrdered: number;
+  totalSpent: number;
+  favoritePizza?: { name: string; rating: number; image?: string };
+  averageOrderValue: number;
+  timeSavedMinutes?: number;
+  mostFrequentPizza?: OrderItemStats;
+}
+
+const fetchUserStats = async (): Promise<UserStatsData> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return {
+    totalOrders: 12,
+    totalPizzasOrdered: 25,
+    totalSpent: 850.75,
+    favoritePizza: { name: "Cheesus Christ!", rating: 4.8, image: "/pizzas/cheesus-christ.png" },
+    averageOrderValue: 70.90,
+    timeSavedMinutes: 25 * 30,
+    mostFrequentPizza: { name: "Onuris", quantity: 7, totalSpent: 287, count: 5, averageRating: 4.2 },
+  };
+};
+
+const StatCard = ({ title, value, icon: Icon, unit, description, className }: {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+  unit?: string;
+  description?: string;
+  className?: string;
+}) => (
+  <Card className={cn(
+    "border-stone-200/75 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 flex flex-col justify-between",
+    className
+  )}>
+    <div>
+      <div className="flex justify-between items-start mb-1">
+        <h3 className="text-sm font-semibold uppercase tracking-wider">{title}</h3>
+        <Icon className="h-6 w-6 text-red-500" />
+      </div>
+      <p className="text-3xl font-bold text-red-600">
+        {value}
+        {unit && <span className="text-base font-medium text-red-500/80 ml-1">{unit}</span>}
+      </p>
+    </div>
+    {description && <p className="text-xs mt-2">{description}</p>}
+  </Card>
+);
+
+
+export default function StatsComponent() {
+  const [stats, setStats] = useState<UserStatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      setLoading(true);
+      const data = await fetchUserStats();
+      setStats(data);
+      setLoading(false);
+    };
+    loadStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 md:p-10 text-center min-h-[300px] flex flex-col justify-center items-center">
+        <LoaderCircle className="h-16 w-16 text-red-400 mx-auto mb-4 animate-spin" />
+        <p className="font-semibold text-lg">Ładowanie Twoich statystyk...</p>
+        <p className="text-sm">Chwileczkę, analizujemy Twoje pizzowe wybory!</p>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="p-6 sm:p-8 md:p-10 text-center min-h-[300px] flex flex-col justify-center items-center">
+        <UtensilsCrossed className="h-16 w-16 mx-auto mb-4" />
+        <p className="font-semibold text-lg">Ups! Coś poszło nie tak.</p>
+        <p className="text-sm">Nie udało się załadować Twoich statystyk. Spróbuj ponownie później.</p>
+      </div>
+    );
+  }
+
+  const timeSavedHours = stats.timeSavedMinutes ? Math.floor(stats.timeSavedMinutes / 60) : 0;
+  const timeSavedRemainingMinutes = stats.timeSavedMinutes ? stats.timeSavedMinutes % 60 : 0;
+
+  return (
+    <div className="space-y-10 md:space-y-12 py-8 px-4 sm:px-6 md:px-8">
+      <h2 className="text-3xl sm:text-4xl font-extrabold text-red-700 text-center mb-2">
+        Twoje Królestwo Pizzy
+      </h2>
+      <p className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
+        Zobacz podsumowanie swoich kulinarnych podbojów w PizzaHub! Oto, jak wyglądają Twoje statystyki.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
+        {stats.favoritePizza && (
+          <Card className="bg-white rounded-xl shadow-xl border-2 border-red-700 flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+            <CardHeader className="bg-red-700 text-white p-5">
+              <div className="flex items-center gap-3">
+                <Star className="h-8 w-8 fill-white text-white" />
+                <div>
+                  <CardTitle className="text-2xl font-bold">Twoja ulubiona pizza</CardTitle>
+                  <CardDescription className="text-white">Pizza, którą oceniłeś najwyżej!</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5 sm:p-6 text-center flex-grow flex flex-col items-center justify-center">
+              {stats.favoritePizza.image && (
+                <img src={stats.favoritePizza.image} alt={stats.favoritePizza.name} className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-full mx-auto mb-4 shadow-lg border-4 border-white" />
+              )}
+              <p className="text-2xl sm:text-3xl font-bold">{stats.favoritePizza.name}</p>
+              <div className="flex justify-center items-center mt-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-6 w-6 ${i < Math.round(stats.favoritePizza!.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-black'}`} />
+                ))}
+                <span className="ml-2 text-base font-semibold">({stats.favoritePizza.rating.toFixed(1)})</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {stats.mostFrequentPizza && (
+          <Card className="bg-white rounded-xl shadow-xl border border-stone-200 flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+            <CardHeader className="bg-stone-100 p-5 border-b">
+              <div className="flex items-center gap-3">
+                <ChefHat className="h-8 w-8 text-red-600" />
+                <div>
+                  <CardTitle className="text-2xl font-bold">Mistrz wyboru</CardTitle>
+                  <CardDescription >Pizza, która najczęściej gości na Twoim stole.</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5 sm:p-6 flex-grow flex flex-col justify-center">
+              <p className="text-2xl sm:text-3xl font-bold mb-3 text-center">{stats.mostFrequentPizza.name}</p>
+              <div className="text-sm space-y-1.5 p-4 rounded-lg">
+                <div className="flex justify-between border-b py-2"><span>Zamówiona:</span> <span className="font-semibold">{stats.mostFrequentPizza.count} razy</span></div>
+                <div className="flex justify-between border-b py-2"><span>Łącznie wydano:</span> <span className="font-semibold">{stats.mostFrequentPizza.totalSpent.toFixed(2)} zł</span></div>
+                {stats.mostFrequentPizza.averageRating && (
+                    <div className="flex items-center justify-between pt-1">
+                        <span>Średnia ocena tej pizzy:</span>
+                        <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`h-4 w-4 ${i < Math.round(stats.mostFrequentPizza!.averageRating!) ? 'text-yellow-400 fill-yellow-400' : 'text-stone-300'}`} />
+                            ))}
+                            <span className="ml-1.5 text-xs font-semibold">({stats.mostFrequentPizza.averageRating.toFixed(1)})</span>
+                        </div>
+                    </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      { (stats.favoritePizza || stats.mostFrequentPizza) && <Separator className="my-10 md:my-12" /> }
+
+
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
+        <StatCard
+          title="Twoje Zamówienia"
+          value={stats.totalOrders}
+          icon={CheckCircle}
+          description="Liczba wszystkich zrealizowanych zamówień."
+        />
+        <StatCard
+          title="Pizze na Koncie"
+          value={stats.totalPizzasOrdered}
+          icon={Pizza}
+          description="Tyle pysznych pizz już za Tobą!"
+        />
+        <StatCard
+          title="Wydatki na szczęście"
+          value={stats.totalSpent.toFixed(2)}
+          unit="zł"
+          icon={DollarSign}
+          description="Suma inwestycji w doskonały smak."
+        />
+        <StatCard
+          title="Średnio na zamówienie"
+          value={stats.averageOrderValue.toFixed(2)}
+          unit="zł"
+          icon={TrendingUp}
+          description="Przeciętna wartość Twoich pizzowych uczt."
+        />
+        {stats.timeSavedMinutes !== undefined && stats.timeSavedMinutes > 0 && (
+          <StatCard
+            title="Czas dla Ciebie"
+            value={`${timeSavedHours}h ${timeSavedRemainingMinutes}m`}
+            icon={Clock}
+            description="Szacunkowo tyle czasu zyskałeś, wybierając nas!"
+          />
+        )}
+      </div>
+    </div>
+  );
+}

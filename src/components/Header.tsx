@@ -51,7 +51,6 @@ export default function Header() {
       <div style={{ height: `${totalHeaderHeight}px` }} />
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-        {/* Sekcja z Logo */}
         <div className="flex justify-center items-center border-b border-stone-200 pr-17" style={{ height: `${logoSectionHeight}px` }}>
           <Link href="/" passHref>
             <img src="/logo.svg" className="h-25" alt="logo" />
