@@ -19,6 +19,7 @@
     "erd": "liam erd build --input ./prisma/schema.prisma --format=prisma --output-dir erd && http-server erd && rm -rf erd"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-accordion": "^1.2.11",
