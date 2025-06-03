@@ -77,7 +77,6 @@ export default function ComposerPage() {
       quantity,
       unitPrice: totalPrice / quantity,
       totalPrice,
-      imageSrc: selectedSize.imageSrc,
     };
     console.log("Dodano do koszyka:", cartItem);
     toast.success("Pizza skomponowana i dodana do koszyka!", {
