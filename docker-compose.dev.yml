@@ -24,3 +24,43 @@ services:
       - database
     environment:
       ADMINER_DEFAULT_SERVER: database
+
+  mail:
+    image: maildev/maildev
+    ports:
+      - 11025:1025
+      - 10080:1080
+
+  ai:
+    image: ollama/ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama:/root/.ollama
+
+  s3:
+    image: minio/minio
+    ports:
+      - 19000:9000
+      - 19001:9001
+    volumes:
+      - s3:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
+
+  search:
+    image: typesense/typesense:28.0
+    ports:
+      - 18108:8108
+    volumes:
+      - search:/data
+    environment:
+      TYPESENSE_API_KEY: DevelopmentApiKey
+    command: --data-dir /data --api-key=$$TYPESENSE_API_KEY --enable-cors
+
+volumes:
+  ollama:
+  s3:
+  search:

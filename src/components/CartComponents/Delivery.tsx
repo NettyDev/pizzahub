@@ -2,55 +2,71 @@
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { RadioGroupItem, RadioGroup } from "@radix-ui/react-radio-group";
-import { CircleCheck, Truck, CalendarDays as CalendarIconLucide } from "lucide-react";
+import { CircleCheck, Truck, CalendarDays, FastForward, Store, Utensils } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { createElement } from "react";
 
 const delivery_options = [
-    { value: "delivery", label: "Dostawa" },
-    { value: "pickup", label: "Odbiór osobisty" },
-    { value: "restaurant", label: "Zjem na miejscu" }
+  { value: "delivery", icon: Truck, label: "Dostawa" },
+  { value: "pickup", icon: Store, label: "Odbiór osobisty" },
+  { value: "restaurant", icon: Utensils, label: "Zjem na miejscu" }
 ];
 
 const delivery_time_options = [
-    { value: "now", label: "Jak najszybciej" },
-    { value: "later", label: "Wybierz termin" }
+  { value: "now", icon: FastForward, label: "Jak najszybciej" },
+  { value: "later", icon: CalendarDays, label: "Wybierz termin" }
 ];
 const available_hours = [
-    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-    "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+  "21:00"
 ];
 
 interface DeliveryMethodProps {
-    selectedDeliveryMethod: string;
-    setSelectedDeliveryMethod: (value: string) => void;
-    selectedDeliveryTime: string;
-    setSelectedDeliveryTime: (value: string) => void;
-    selectedDate: Date | undefined;
-    setSelectedDate: (date: Date | undefined) => void;
-    selectedHour: string | undefined;
-    setSelectedHour: (hour: string | undefined) => void;
+  selectedDeliveryMethod: string;
+  setSelectedDeliveryMethod: (value: string) => void;
+  selectedDeliveryTime: string;
+  setSelectedDeliveryTime: (value: string) => void;
+  selectedDate: Date | undefined;
+  setSelectedDate: (date: Date | undefined) => void;
+  selectedHour: string | undefined;
+  setSelectedHour: (hour: string | undefined) => void;
 }
 
 export default function DeliveryMethod({
-    selectedDeliveryMethod,
-    setSelectedDeliveryMethod,
-    selectedDeliveryTime,
-    setSelectedDeliveryTime,
-    selectedDate,
-    setSelectedDate,
-    selectedHour,
-    setSelectedHour
+  selectedDeliveryMethod,
+  setSelectedDeliveryMethod,
+  selectedDeliveryTime,
+  setSelectedDeliveryTime,
+  selectedDate,
+  setSelectedDate,
+  selectedHour,
+  setSelectedHour
 }: DeliveryMethodProps) {
-
-const handleDateSelect = (date: Date | undefined) => {
+  const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-};
+  };
 
   return (
     <>
@@ -75,8 +91,13 @@ const handleDateSelect = (date: Date | undefined) => {
               )}
             >
               <CircleCheck className="absolute top-2.5 right-2.5 h-5 w-5 text-red-600 fill-white group-data-[state=unchecked]:hidden" />
-              <Truck className="mb-2 h-7 w-7 text-stone-500" />
-              <Label htmlFor={`delivery-${option.value}`} className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer">{option.label}</Label>
+              {createElement(option.icon, { className: "mb-2 h-7 w-7 text-stone-500" })}
+              <Label
+                htmlFor={`delivery-${option.value}`}
+                className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer"
+              >
+                {option.label}
+              </Label>
             </RadioGroupItem>
           ))}
         </RadioGroup>
@@ -113,8 +134,13 @@ const handleDateSelect = (date: Date | undefined) => {
               )}
             >
               <CircleCheck className="absolute top-2.5 right-2.5 h-5 w-5 text-red-600 fill-white group-data-[state=unchecked]:hidden" />
-              <CalendarIconLucide className="mb-2 h-7 w-7 text-stone-500" />
-              <Label htmlFor={`time-${option.value}`} className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer">{option.label}</Label>
+              {createElement(option.icon, { className: "mb-2 h-7 w-7 text-stone-500" })}
+              <Label
+                htmlFor={`time-${option.value}`}
+                className="font-poppins-bold text-sm font-semibold tracking-tight text-stone-800 cursor-pointer"
+              >
+                {option.label}
+              </Label>
             </RadioGroupItem>
           ))}
         </RadioGroup>
@@ -130,7 +156,7 @@ const handleDateSelect = (date: Date | undefined) => {
                     !selectedDate && "text-stone-500"
                   )}
                 >
-                  <CalendarIconLucide className="mr-2 h-4 w-4" />
+                  <CalendarDays className="mr-2 h-4 w-4" />
                   {selectedDate ? format(selectedDate, "PPP", { locale: pl }) : <span>Wybierz datę</span>}
                 </Button>
               </PopoverTrigger>
@@ -149,18 +175,18 @@ const handleDateSelect = (date: Date | undefined) => {
               </PopoverContent>
             </Popover>
             {selectedDate && (
-                <Select value={selectedHour} onValueChange={setSelectedHour}>
+              <Select value={selectedHour} onValueChange={setSelectedHour}>
                 <SelectTrigger className="w-full border-stone-300 hover:border-stone-400 text-sm h-11 font-poppins">
-                    <SelectValue placeholder="Wybierz godzinę" />
+                  <SelectValue placeholder="Wybierz godzinę" />
                 </SelectTrigger>
                 <SelectContent className="bg-white shadow-xl rounded-md border border-stone-200 z-50">
-                    {available_hours.map(hour => (
+                  {available_hours.map((hour) => (
                     <SelectItem key={hour} value={hour} className="font-poppins text-sm">
-                        {hour}
+                      {hour}
                     </SelectItem>
-                    ))}
+                  ))}
                 </SelectContent>
-                </Select>
+              </Select>
             )}
           </div>
         )}
