@@ -2,6 +2,7 @@
 
 # custom
 /src/prisma
+/erd
 
 # dependencies
 /node_modules
