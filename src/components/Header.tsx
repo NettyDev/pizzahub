@@ -1,112 +1,197 @@
 "use client";
 
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuLink
-} from "@/components/ui/navigation-menu";
-import { ShoppingCart, User } from "lucide-react";
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import { ShoppingCart, LogOut, UserPlus, LogIn, Home as HomeIcon, Pizza, Phone as PhoneIcon, User as UserProfileIcon, Menu as MenuIcon } from "lucide-react";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import LoginDialog from "./LoginDialog";
 import RegisterDialog from "./RegisterDialog";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import UserAvatar from "./UserAvatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+
+
+type NavLinkItem = {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+};
+
+const mainNavLinks: NavLinkItem[] = [
+  { href: "/", label: "Strona główna", icon: HomeIcon },
+  { href: "/menu", label: "Menu", icon: Pizza },
+  { href: "/contact", label: "Kontakt", icon: PhoneIcon },
+];
+
 
 export default function Header() {
-  const { data: session, isPending, error, refetch } = authClient.useSession();
+  const { data: session, isPending, refetch } = authClient.useSession();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   useEffect(() => {
-    console.log(session);
-  }, [isPending]);
-  const [login, setLogin] = useState(false);
-  const [register, setRegister] = useState(false);
+    if (!loginOpen && !registerOpen) {
+      refetch();
+    }
+  }, [loginOpen, registerOpen, refetch]);
+
+  const logoSectionHeight = 110;
+  const navSectionHeight = 52;
+  const totalHeaderHeight = logoSectionHeight + navSectionHeight;
+
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-20 bg-white">
-        <div className="flex justify-center shadow-2xs pt-1">
-          <img src="/logo.svg" className="h-25" alt="" />
+      <div style={{ height: `${totalHeaderHeight}px` }} />
+
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+        {/* Sekcja z Logo */}
+        <div className="flex justify-center items-center border-b border-stone-200 pr-17" style={{ height: `${logoSectionHeight}px` }}>
+          <Link href="/" passHref>
+            <img src="/logo.svg" className="h-25" alt="logo" />
+          </Link>
         </div>
-        <div className="w-full h-11 py-1 px-4 shadow-md  flex justify-center relative">
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/" passHref>
-                  <NavigationMenuLink>Strona główna</NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <Link href="/menu" passHref>
-                  <NavigationMenuLink>Menu</NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8" style={{ height: `${navSectionHeight}px` }}>
+          <div className="flex items-center justify-between h-full">
+            <div className="hidden md:flex invisible">
+            </div>
+            <div className="hidden md:flex items-center pb-3">
+              <NavigationMenu>
+                <NavigationMenuList className="gap-x-1">
+                  {mainNavLinks.map((link) => (
+                    <NavigationMenuItem key={link.href}>
+                      <Link href={link.href} passHref >
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            "hover:bg-red-50 hover:text-red-700 transition-colors text-sm"
+                          )}
+                        >
+                          <link.icon className="h-4 w-4 mr-2" /> {link.label}
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
 
-              <NavigationMenuItem>
-                <Link href="/contact" passHref>
-                  <NavigationMenuLink>Kontakt</NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <NavigationMenu className="absolute right-4 top-2">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/cart" passHref>
-                  <NavigationMenuLink>
-                    <ShoppingCart />
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                {/* <Link href="/profile" passHref> */}
-                <Popover>
-                  <PopoverTrigger>
-                    <NavigationMenuLink>
-                      <User />
-                    </NavigationMenuLink>
-                  </PopoverTrigger>
-                  {session ? (
-                    <PopoverContent className="flex flex-col gap-4 m-4">
-                      <h2>{session.user.name}</h2>
-                      <Button
-                        onClick={() =>
-                          authClient.signOut(
-                            {},
-                            {
-                              onSuccess: (ctx) => {
-                                toast.success("Wylogowano pomyślnie");
-                              }
-                            }
-                          )
-                        }
-                      >
-                        Wyloguj
-                      </Button>
-                    </PopoverContent>
-                  ) : (
-                    <PopoverContent className="flex flex-col gap-4 m-4">
-                      <Button onClick={() => setLogin(true)}>Zaloguj się</Button>
-                      <div className="flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-2 after:flex-1 after:border-t after:border-gray-200 after:ms-2 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">
-                        Nie masz konta?
+            <div className="flex items-center gap-x-2 sm:gap-x-3">
+              <Link href="/cart" passHref>
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-50 text-stone-700 hover:text-red-700 transition-colors">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="sr-only">Koszyk</span>
+                </Button>
+              </Link>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-50 text-stone-700 hover:text-red-700 transition-colors">
+                    <UserAvatar user={session?.user} className="h-7 w-7" />
+                    <span className="sr-only">Profil użytkownika</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-60 p-0 mr-2 sm:mr-0" align="end">
+                  {isPending ? (
+                    <div className="p-4 text-center text-sm text-stone-500">Ładowanie...</div>
+                  ) : session?.user ? (
+                    <div className="flex flex-col">
+                      <div className="p-3 text-center border-b">
+                        <UserAvatar user={session.user} className="h-12 w-12 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-stone-800 truncate">{session.user.name || "Użytkownik"}</p>
+                        {session.user.email && (
+                           <p className="text-xs text-stone-500 truncate">{session.user.email}</p>
+                        )}
                       </div>
-                      <Button variant="outline" onClick={() => setRegister(true)}>
-                        Zarejestruj się
+                      <Link href="/profile" passHref>
+                        <Button variant="ghost" className="w-full justify-start px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 rounded-none">
+                          <UserProfileIcon className="mr-2 h-4 w-4" /> Mój profil
+                        </Button>
+                      </Link>
+                      <Separator />
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-none"
+                        onClick={() => authClient.signOut({}, { onSuccess: () => { toast.success("Wylogowano pomyślnie"); refetch(); }, onError: () => { toast.error("Wystąpił błąd."); }})}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" /> Wyloguj
                       </Button>
-                    </PopoverContent>
+                    </div>
+                  ) : (
+                    <div className="p-4 flex flex-col gap-3">
+                      <Button onClick={() => {setLoginOpen(true); setIsSheetOpen(false);}} className="w-full bg-red-600 hover:bg-red-700 text-white">
+                        <LogIn className="mr-2 h-4 w-4" /> Zaloguj się
+                      </Button>
+                      <div className="flex items-center text-xs text-stone-500 before:flex-1 before:border-t before:border-stone-200 before:mr-2 after:flex-1 after:border-t after:border-stone-200 after:ml-2">
+                        lub
+                      </div>
+                      <Button variant="outline" onClick={() => {setRegisterOpen(true); setIsSheetOpen(false);}} className="w-full hover:border-red-500 hover:text-red-600">
+                        <UserPlus className="mr-2 h-4 w-4" /> Zarejestruj się
+                      </Button>
+                    </div>
                   )}
-                </Popover>
-                {/* </Link> */}
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                </PopoverContent>
+              </Popover>
+
+
+              <div className="md:hidden flex items-center">
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-red-50 text-stone-700 hover:text-red-700 transition-colors">
+                      <MenuIcon className="h-6 w-6" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0">
+                    <SheetHeader className="p-4 border-b bg-red-600">
+                      <SheetTitle className="text-white text-lg">Nawigacja</SheetTitle>
+                    </SheetHeader>
+                    <nav className="flex flex-col py-4">
+                      {mainNavLinks.map((link) => (
+                        <SheetClose asChild key={`mobile-${link.href}`}>
+                           <Link
+                            href={link.href}
+                            className="flex items-center px-4 py-3 text-base font-medium text-stone-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                          >
+                            <link.icon className="h-5 w-5 mr-3 text-red-600" />
+                            {link.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </nav>
+                    {!session && !isPending && (
+                      <>
+                        <Separator className="my-2" />
+                        <div className="p-4 space-y-3">
+                           <SheetClose asChild>
+                            <Button onClick={() => setLoginOpen(true)} className="w-full bg-red-600 hover:bg-red-700 text-white">
+                              <LogIn className="mr-2 h-4 w-4" /> Zaloguj się
+                            </Button>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Button variant="outline" onClick={() => setRegisterOpen(true)} className="w-full hover:border-red-500 hover:text-red-600">
+                              <UserPlus className="mr-2 h-4 w-4" /> Zarejestruj się
+                            </Button>
+                          </SheetClose>
+                        </div>
+                      </>
+                    )}
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </div>
+          </div>
         </div>
-      </nav>
-      <LoginDialog open={login} onOpenChange={setLogin} />
-      <RegisterDialog open={register} onOpenChange={setRegister} />
-      <div className="h-36"></div>
+      </header>
+
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
+      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
     </>
   );
 }
