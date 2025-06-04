@@ -9,6 +9,7 @@ datasource db {
 }
 
 // Wygenerowane przez better-auth
+
 model User {
   id            String    @id
   name          String
@@ -20,6 +21,18 @@ model User {
   sessions      Session[]
   accounts      Account[]
   Order         Order[]
+
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+  surname    String
+  phone      String?
+  agreement1 Boolean
+  agreement2 Boolean
+  agreement3 Boolean
+  Address    Address[]
+  Company    Company[]
 
   @@unique([email])
   @@map("user")
@@ -35,6 +48,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@map("session")
@@ -72,14 +87,45 @@ model Verification {
 
 // Koniec wygenerowanej części
 
+model Address {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  street  String?
+  suite   String?
+  zipcode String?
+  city    String?
+
+  @@map("address")
+}
+
+model Company {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  nip     String
+  name    String
+  street  String
+  suite   String
+  zipcode String
+  city    String
+
+  @@map("company")
+}
+
 // Nasze pizze w ofercie
+
 model Product {
   id Int @id @default(autoincrement())
 
-  name        String // nazwa pizzy
-  description String // opis pizzy
-  spice       Int? // poziom ostrości pizzy (pole opcjonalne)
-  basePrice   Float // Może cena obliczana na podstawie użytych składników?
+  name  String // nazwa pizzy
+  image String // link lub id obrazka
+  spice Int    @default(1) // poziom ostrości pizzy (pole opcjonalne)
+  price Float // Może cena obliczana na podstawie użytych składników?
 
   Product_Ingredient Product_Ingredient[]
   ProductOrder       ProductOrder[]
@@ -88,6 +134,7 @@ model Product {
 }
 
 // Tablica many-many dla pizz i składników
+
 model Product_Ingredient {
   id Int @id @default(autoincrement())
 
@@ -100,13 +147,13 @@ model Product_Ingredient {
 }
 
 // Składnik do pizz - na podstawie ich możemy określić cenę końcową oraz dostępność pizz
+
 model Ingredient {
   id Int @id @default(autoincrement())
 
   name     String // nazwa składnika
-  // description String // opis składnika
   quantity Int    @default(0) // ilość składników na magazynie
-  price    Float // cena dla kreatora (możliwe że nie tylko)
+  price    Float // cena
 
   Product_Ingredient      Product_Ingredient[]
   Composition_Ingredient  Composition_Ingredient[]
@@ -116,12 +163,12 @@ model Ingredient {
 }
 
 // Rodzaj ciasta do wyboru
+
 model DoughType {
   id Int @id @default(autoincrement())
 
-  name        String // francuskie, pan, ser w brzegach, itd
-  description String // krótki opis - czy zostawiamy?
-  price       Float // cena dodatkowa
+  name  String // cienkie, grube
+  price Float // cena dodatkowa
 
   ProductOrder     ProductOrder[]
   CompositionOrder CompositionOrder[]
@@ -130,13 +177,13 @@ model DoughType {
 }
 
 // Rozmiar pizzy
+
 model Size {
   id Int @id @default(autoincrement())
 
-  name        String // mała, średnia, duża, max, itd
+  name        String // mała, średnia, duża
   description String // krótki opis - czy zostawiamy?
-  size        Int // rozmiar w cm
-  price       Float // cena dodatkowa
+  priceRatio  Float // współczynnik ceny 1, 1.2, 1.4
 
   ProductOrder     ProductOrder[]
   CompositionOrder CompositionOrder[]
@@ -144,23 +191,8 @@ model Size {
   @@map("size")
 }
 
-// DoughType i Size wydają się być dobrą alternatywą od tego aby na każdy wariant ustalać dla każdej pizzy osobno
-
-// Dodatki do pizzy np. sosy, napoje
-model Addon {
-  id Int @id @default(autoincrement())
-
-  name        String // nazwa dodatku
-  description String // krótki opis
-  price       Float // cena dodatku
-
-  ProductOrder_Addon ProductOrder_Addon[]
-  Composition_Addon  Composition_Addon[]
-
-  @@map("addon")
-}
-
 // Dodatkowe składniki do gotowej pizzy
+
 model ProductOrder_Ingredient {
   id Int @id @default(autoincrement())
 
@@ -168,25 +200,10 @@ model ProductOrder_Ingredient {
   ingredientId   Int
   productOrder   ProductOrder @relation(fields: [productOrderId], references: [id])
   productOrderId Int
-  quantity       Int          @default(1) // ilość dodatkowego składnika na pizzy
 
   @@map("product_order_ingredient")
 }
 
-// Dodatki do pizzy (np. sosy, napoje)
-model ProductOrder_Addon {
-  id Int @id @default(autoincrement())
-
-  addon          Addon        @relation(fields: [addonId], references: [id])
-  addonId        Int
-  productOrder   ProductOrder @relation(fields: [productOrderId], references: [id])
-  productOrderId Int
-  quantity       Int          @default(1) // ilość danego dodatku
-
-  @@map("product_order_addon")
-}
-
-// Produkt gotowy do zamówienia
 model ProductOrder {
   id Int @id @default(autoincrement())
 
@@ -198,16 +215,16 @@ model ProductOrder {
   doughTypeId Int
   order       Order     @relation(fields: [orderId], references: [id])
   orderId     Int
-  price       Float // cena końcowa pizzy
+  price       Float // cena za sztuke
   quantity    Int       @default(1)
 
   ProductOrder_Ingredient ProductOrder_Ingredient[]
-  ProductOrder_Addon      ProductOrder_Addon[]
 
   @@map("product_order")
 }
 
 // Składniki do kompozycji
+
 model Composition_Ingredient {
   id Int @id @default(autoincrement())
 
@@ -215,25 +232,12 @@ model Composition_Ingredient {
   ingredientId       Int
   compositionOrder   CompositionOrder @relation(fields: [compositionOrderId], references: [id])
   compositionOrderId Int
-  quantity           Int              @default(1) // ilość składnika na komponowanej pizzy
 
   @@map("composition_ingredients")
 }
 
-// Dodatki do kompozycji
-model Composition_Addon {
-  id Int @id @default(autoincrement())
-
-  addon              Addon            @relation(fields: [addonId], references: [id])
-  addonId            Int
-  compositionOrder   CompositionOrder @relation(fields: [compositionOrderId], references: [id])
-  compositionOrderId Int
-  quantity           Int              @default(1) // ilość dodatków
-
-  @@map("composition_addon")
-}
-
 // Kompozycja
+
 model CompositionOrder {
   id Int @id @default(autoincrement())
 
@@ -243,27 +247,73 @@ model CompositionOrder {
   doughTypeId Int
   order       Order     @relation(fields: [orderId], references: [id])
   orderId     Int
+  price       Float // cena po skomponowaniu pizzy za sztuke
   quantity    Int       @default(1)
-  price       Float // cena po skomponowaniu pizzy
 
   Composition_Ingredient Composition_Ingredient[]
-  Composition_Addon      Composition_Addon[]
 
   @@map("composition_order")
 }
 
 // Zamówienie
+
 model Order {
   id Int @id @default(autoincrement())
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  price  Float
-  // payment // do zdefiniowania
-  // delivery // do zdefiniowania
+  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId   String?
+  price    Float
+  payment  String
+  delivery String
+  status   String
+  comment  String
+
+  orderContact   OrderContact  @relation(fields: [orderContactId], references: [id])
+  orderContactId Int           @unique
+  orderAddress   OrderAddress  @relation(fields: [orderAddressId], references: [id])
+  orderAddressId Int           @unique
+  orderCompany   OrderCompany? @relation(fields: [orderCompanyId], references: [id])
+  orderCompanyId Int?          @unique
 
   ProductOrder     ProductOrder[]
   CompositionOrder CompositionOrder[]
 
   @@map("order")
+}
+
+model OrderContact {
+  id Int @id @default(autoincrement())
+
+  name    String
+  surname String
+  phone   String
+  email   String
+  Order   Order[]
+
+  @@map("order_contact")
+}
+
+model OrderAddress {
+  id      Int     @id @default(autoincrement())
+  street  String
+  suite   String
+  zipcode String
+  city    String
+  Order   Order[]
+
+  @@map("order_address")
+}
+
+model OrderCompany {
+  id Int @id @default(autoincrement())
+
+  nip     String
+  name    String
+  street  String
+  suite   String
+  zipcode String
+  city    String
+  Order   Order[]
+
+  @@map("order_company")
 }

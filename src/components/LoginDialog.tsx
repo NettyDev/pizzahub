@@ -44,6 +44,12 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
             case "INVALID_EMAIL_OR_PASSWORD":
               toast.error("Wystąpił błąd", { description: "Nieprawidłowy email lub hasło" });
               break;
+            case "USER_ALREADY_EXISTS":
+              toast.error("Wystąpił błąd", { description: "Użytkownik już istnieje" });
+              break;
+            case "EMAIL_NOT_VERIFIED":
+              toast.error("Wystąpił błąd", { description: "Email nie został zweryfikowany" });
+              break;
             default:
               toast.error("Wystąpił błąd", { description: ctx.error.message });
           }

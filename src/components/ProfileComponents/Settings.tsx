@@ -2,11 +2,11 @@
 
 import FormInput from "@/components/CartComponents/FormInput";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { CheckIcon, MinusIcon } from "lucide-react";
 import * as React from "react";
-
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -20,9 +20,7 @@ const Checkbox = React.forwardRef<
     )}
     {...props}
   >
-    <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
-    >
+    <CheckboxPrimitive.Indicator className={cn("flex items-center justify-center text-current")}>
       <MinusIcon className="h-4 w-4 hidden group-data-[state=indeterminate]:block" />
       <CheckIcon className="h-4 w-4 hidden group-data-[state=checked]:block" />
     </CheckboxPrimitive.Indicator>
@@ -31,50 +29,38 @@ const Checkbox = React.forwardRef<
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 export default function Settings() {
-  const [consents, setConsents] = React.useState<
-    Record<string, CheckboxPrimitive.CheckedState>
-  >({
+  const [consents, setConsents] = React.useState<Record<string, CheckboxPrimitive.CheckedState>>({
     sms: false,
     phone: false,
-    offers: false,
+    offers: false
   });
 
-  const handleConsentChange = (
-    consentName: string,
-    checked: CheckboxPrimitive.CheckedState
-  ) => {
+  const handleConsentChange = (consentName: string, checked: CheckboxPrimitive.CheckedState) => {
     setConsents((prev) => ({
       ...prev,
-      [consentName]: checked,
-    }));
-  };
-  
-  const handleSingleConsentChange = (
-    consentName: string,
-    newCheckedState: CheckboxPrimitive.CheckedState
-  ) => {
-    setConsents((prev) => ({
-      ...prev,
-      [consentName]: newCheckedState,
+      [consentName]: checked
     }));
   };
 
+  const handleSingleConsentChange = (consentName: string, newCheckedState: CheckboxPrimitive.CheckedState) => {
+    setConsents((prev) => ({
+      ...prev,
+      [consentName]: newCheckedState
+    }));
+  };
 
-  const handleSelectAllChange = (
-    checked: CheckboxPrimitive.CheckedState
-  ) => {
+  const handleSelectAllChange = (checked: CheckboxPrimitive.CheckedState) => {
     const newCheckedState = checked === true;
     setConsents({
       sms: newCheckedState,
       phone: newCheckedState,
-      offers: newCheckedState,
+      offers: newCheckedState
     });
   };
 
   const consentKeys = Object.keys(consents);
   const allTrue = consentKeys.every((key) => consents[key] === true);
-  const allFalse = consentKeys.every((key) => consents[key] === false || consents[key] === 'indeterminate');
-
+  const allFalse = consentKeys.every((key) => consents[key] === false || consents[key] === "indeterminate");
 
   let selectAllState: CheckboxPrimitive.CheckedState;
   if (allTrue) {
@@ -85,26 +71,23 @@ export default function Settings() {
     selectAllState = "indeterminate";
   }
 
+  const [company, setCompany] = React.useState(false);
+  const { data: session, isPending, refetch } = authClient.useSession();
+
   return (
     <div className="p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex flex-col items-start w-full">
           <h2 className="text-3xl font-semibold mb-4 text-shadow-xs">Ustawienia</h2>
           <p className="text-stone-600 text-sm mb-8">Zarządzaj swoimi ustawieniami konta.</p>
-        
+
           <div className="w-full mb-10">
             <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Dane konta</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
               <FormInput label="Imię" id="firstName" placeholder="Tomasz" required />
               <FormInput label="Nazwisko" id="lastName" placeholder="Kowalski" required />
               <FormInput label="Telefon" id="phone" placeholder="123-456-789" type="tel" />
-              <FormInput label="Ulica" id="street" placeholder="Malinowa" />
-              <FormInput label="Numer domu / mieszkania" id="houseNumber" placeholder="10A / 2" />
-              <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" />
-              <FormInput label="Miasto" id="city" placeholder="Radomsko" />
-              <FormInput label="Piętro" id="floor" placeholder="1 (opcjonalnie)" />
-              <FormInput label="Firma" id="company" placeholder="Nazwa firmy" className="sm:col-span-2" />
-              <FormInput label="Hasło" id="password" placeholder="********" type="password" required />
+              <FormInput label="E-mail" id="email" placeholder="mail@example.com" type="mail" required />
               <div className="sm:col-span-2">
                 <Button className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200">
                   Zmień hasło
@@ -112,11 +95,54 @@ export default function Settings() {
               </div>
             </div>
           </div>
+          <div className="w-full mb-10">
+            <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Adres dostawy</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+              <FormInput label="Ulica" id="street" placeholder="Malinowa" />
+              <FormInput label="Numer domu / mieszkania" id="houseNumber" placeholder="10A / 2" />
+              <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" />
+              <FormInput label="Miasto" id="city" placeholder="Radomsko" />
+            </div>
+          </div>
+
+          <div className="w-full mb-10">
+            <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Dane do faktury</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+              {company ? (
+                <>
+                  <FormInput label="NIP" id="nip" placeholder="1234567890" />
+                  <FormInput label="Nazwa firmy" id="company" placeholder="Januszex sp. z o.o." />
+                  <FormInput label="Ulica" id="street" placeholder="Malinowa" />
+                  <FormInput label="Numer domu / lokalu" id="houseNumber" placeholder="10A / 2" />
+                  <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" />
+                  <FormInput label="Miasto" id="city" placeholder="Radomsko" />
+                  <div className="sm:col-span-2">
+                    <Button
+                      onClick={() => setCompany(false)}
+                      className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
+                    >
+                      Usuń dane
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="sm:col-span-2">
+                  <Button
+                    onClick={() => setCompany(true)}
+                    className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
+                  >
+                    Dodaj dane
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="w-full">
             <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Twoje zgody i ustawienia powiadomień</h3>
             <p className="text-stone-600 text-sm mb-6">Zaznaczając pola, akceptujesz Politykę Prywatności.</p>
-            
+
             <div className="space-y-4">
               <div className="flex items-center">
                 <Checkbox
@@ -139,9 +165,7 @@ export default function Settings() {
                     <Checkbox
                       id="smsConsent"
                       checked={consents.sms}
-                      onCheckedChange={(checked) =>
-                        handleSingleConsentChange("sms", checked) 
-                      }
+                      onCheckedChange={(checked) => handleSingleConsentChange("sms", checked)}
                     />
                     <label
                       htmlFor="smsConsent"
@@ -157,9 +181,7 @@ export default function Settings() {
                     <Checkbox
                       id="phoneConsent"
                       checked={consents.phone}
-                      onCheckedChange={(checked) =>
-                        handleSingleConsentChange("phone", checked)
-                      }
+                      onCheckedChange={(checked) => handleSingleConsentChange("phone", checked)}
                     />
                     <label
                       htmlFor="phoneConsent"
@@ -175,9 +197,7 @@ export default function Settings() {
                     <Checkbox
                       id="offersConsent"
                       checked={consents.offers}
-                      onCheckedChange={(checked) =>
-                        handleSingleConsentChange("offers", checked)
-                      }
+                      onCheckedChange={(checked) => handleSingleConsentChange("offers", checked)}
                     />
                     <label
                       htmlFor="offersConsent"
@@ -189,26 +209,25 @@ export default function Settings() {
                 </div>
               </div>
 
-              <Button 
-                className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200 mt-6"
-              >
+              <Button className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200 mt-6">
                 Zapisz zgody
               </Button>
             </div>
           </div>
         </div>
       </div>
-          <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Usuwanie konta</h3>
-          <p className="text-stone-600 text-sm mb-6">
-            Jeśli zdecydujesz się usunąć swoje konto, wszystkie Twoje dane zostaną trwale usunięte.
-            Upewnij się, że na pewno chcesz to zrobić - Twojego konta nie będziemy mogli przywrócić.
-            Usunięcie konta spowoduje utratę wszystkich danych i historii zamówień.</p>
-            <Button
-              className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200" 
-              onClick={() => alert("Twoje konto zostało usunięte.")}
-            >
-              Usuń konto
-            </Button>
+      <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Usuwanie konta</h3>
+      <p className="text-stone-600 text-sm mb-6">
+        Jeśli zdecydujesz się usunąć swoje konto, wszystkie Twoje dane zostaną trwale usunięte. Upewnij się, że na pewno
+        chcesz to zrobić - Twojego konta nie będziemy mogli przywrócić. Usunięcie konta spowoduje utratę wszystkich
+        danych i historii zamówień.
+      </p>
+      <Button
+        className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
+        onClick={() => alert("Twoje konto zostało usunięte.")}
+      >
+        Usuń konto
+      </Button>
     </div>
   );
 }

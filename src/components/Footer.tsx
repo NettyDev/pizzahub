@@ -1,4 +1,4 @@
-import { Twitter, Instagram, Facebook } from "lucide-react"
+import { Twitter, Instagram, Facebook } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -11,54 +11,44 @@ export default function Footer() {
             </a>
             <div className="mt-6 lg:max-w-sm">
               <p className="text-sm">
-                Witaj w PizzaHub! Jesteśmy pasjonatami doskonałego smaku i świeżych składników.<br/>
-                Każda nasza pizza to historia opowiedziana na chrupiącym cieście, z miłością do tradycji i odrobiną nowoczesnej fantazji. Zapraszamy do odkrywania naszych specjałów!
+                Witaj w PizzaHub! Jesteśmy pasjonatami doskonałego smaku i świeżych składników.
+                <br />
+                Każda nasza pizza to historia opowiedziana na chrupiącym cieście, z miłością do tradycji i odrobiną
+                nowoczesnej fantazji. Zapraszamy do odkrywania naszych specjałów!
               </p>
-
             </div>
           </div>
           <div className="space-y-2 text-sm">
             <p className="text-base font-bold tracking-wide">Kontakt</p>
             <div className="flex">
               <p className="mr-1">Telefon:</p>
-              <p>
-                111-222-333
-              </p>
+              <p>+48 213 769 735</p>
             </div>
             <div className="flex">
               <p className="mr-1">E-mail:</p>
-              <p>
-                pizzahub@pizzahub.com
-              </p>
+              <p>kontakt@pizzahub.pl</p>
             </div>
             <div className="flex">
               <p className="mr-1">Adres:</p>
               <p>
-                Ćwiartki 3/4
+                Aleja Armii Krajowej 13/15, <br /> 42-200 Częstochowa
               </p>
             </div>
           </div>
           <div>
             <span className="font-bold tracking-wide">Media społecznościowe</span>
             <div className="flex items-center mt-1 space-x-3">
-                <Twitter className="h-5 text-red-700"></Twitter>
-                <Instagram className="h-5 text-red-700"></Instagram>
-                <Facebook className="h-5 text-red-700"></Facebook>
-
+              <Twitter className="h-5 text-red-700"></Twitter>
+              <Instagram className="h-5 text-red-700"></Instagram>
+              <Facebook className="h-5 text-red-700"></Facebook>
             </div>
           </div>
         </div>
         <div className="flex flex-col-reverse justify-between pt-5 pb-10 border-t lg:flex-row">
-          <p className="text-sm text-gray-600">© Copyright 2025 Lorem Inc. All rights reserved.</p>
-          <p className="text-sm text-gray-600">
-            F.A.Q
-          </p>
-          <p className="text-sm text-gray-600">
-            Polityka Prywatności
-          </p>
-          <p className="text-sm text-gray-600">
-            Terms
-          </p>
+          <p className="text-sm text-gray-600">© Copyright 2025 PizzaHub s.a. Wszelkie prawa zastrzeżone.</p>
+          <p className="text-sm text-gray-600">F.A.Q</p>
+          <p className="text-sm text-gray-600">Polityka Prywatności</p>
+          <p className="text-sm text-gray-600">Terms</p>
         </div>
       </div>
     </div>

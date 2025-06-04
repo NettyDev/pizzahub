@@ -50,7 +50,8 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
       {
         email: formData.email,
         password: formData.password,
-        name: formData.name + " " + formData.surname
+        name: formData.name,
+        surname: formData.surname
       },
       {
         onError: (ctx) => {

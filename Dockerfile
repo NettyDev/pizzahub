@@ -24,8 +24,9 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV BETTER_AUTH_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16 | base64)
 ENV BETTER_AUTH_URL=http://localhost:3000
 ENV DATABASE_URL="postgresql://postgres:password@database:5432/next?schema=public"
 
-CMD ["bun", "prisma", "migrate", "deploy", "&&", "bun", "server.js"]
+RUN apk add minio-client
+
+CMD ["bunx", "prisma", "migrate", "deploy", "&&", "bun", "server.js"]

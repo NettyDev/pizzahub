@@ -24,3 +24,32 @@ services:
       - database
     environment:
       ADMINER_DEFAULT_SERVER: database
+
+  mail:
+    image: maildev/maildev
+    ports:
+      - 11025:1025
+      - 11080:1080
+
+  ai:
+    image: ollama/ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ollama:/root/.ollama
+
+  s3:
+    image: minio/minio
+    ports:
+      - 19000:9000
+      - 19001:9001
+    volumes:
+      - s3:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
+
+volumes:
+  ollama:
+  s3:

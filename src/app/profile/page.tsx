@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Settings as Sts, ShoppingCart, Sparkles, UserCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,58 +7,57 @@ import Settings from "@/components/ProfileComponents/Settings";
 import Orders from "@/components/ProfileComponents/Orders";
 import UserAvatar from "@/components/UserAvatar";
 import StatsComponent from "@/components/ProfileComponents/StatsComponent";
+import { authClient } from "@/lib/auth-client";
 
 const tabs = [
   {
     name: "Ustawienia",
     value: "settings",
     icon: Sts,
-    content: Settings,
+    content: Settings
   },
   {
     name: "Zamówienia",
     value: "orders",
     icon: ShoppingCart,
-    content: Orders,
+    content: Orders
   },
   {
     name: "Statystyki",
     value: "stats",
     icon: Sparkles,
-    content: StatsComponent,
+    content: StatsComponent
   }
 ];
 
 export default function Home() {
   return (
-      <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
-        <div className="bg-white w-full max-w-5xl shadow-2xl">
-          <Profile />
-        </div>
+    <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
+      <div className="bg-white w-full max-w-5xl shadow-2xl">
+        <Profile />
       </div>
+    </div>
   );
 }
 
 function Profile() {
-  const imie = "username";
+  const { data: session, isPending, refetch } = authClient.useSession();
+  const imie = !isPending && session ? `${session?.user.name} ${session?.user.surname}` : "";
 
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:p-10">
       <Tabs defaultValue={tabs[0].value} className="w-full">
         <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8 lg:gap-10">
-
           <div className="w-full md:w-auto md:min-w-[260px] lg:min-w-[300px] flex flex-col gap-6 md:gap-8 mb-6 md:mb-0">
             <div className="flex items-center gap-4 p-2 md:p-0">
-              <UserAvatar user={{ name: imie, image: null }} className="h-14 w-14 sm:h-16 sm:w-16"/>
+              <UserAvatar user={{ name: imie, image: null }} className="h-14 w-14 sm:h-16 sm:w-16" />
               <div className="flex flex-col min-w-0">
                 <span className="text-sm text-shadow-xs">Cześć,</span>
-                <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">
-                  {imie}
-                </span>
+                <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">{imie}</span>
               </div>
             </div>
 
-            <div className="pt-1"/>
+            <div className="pt-1" />
             <TabsList className="flex flex-col items-stretch w-full p-0 bg-transparent mt-2 md:mt-0 ">
               {tabs.map((tab) => (
                 <TabsTrigger
@@ -76,27 +76,24 @@ function Profile() {
                   disabled={!tab.content}
                 >
                   <tab.icon className="h-5 w-5 shrink-0" />
-                  <span className="truncate">
-                      {tab.name}
-                  </span>
+                  <span className="truncate">{tab.name}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
           </div>
           <div className="flex-1 min-w-0 ">
-            {tabs.map((tab) => (
+            {tabs.map((tab) =>
               tab.content ? (
                 <TabsContent
                   key={tab.value}
                   value={tab.value}
                   className="mt-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 >
-                  {typeof tab.content === 'function' ? <tab.content /> : <div className="p-6">{tab.content}</div>}
+                  {typeof tab.content === "function" ? <tab.content /> : <div className="p-6">{tab.content}</div>}
                 </TabsContent>
               ) : null
-            ))}
+            )}
           </div>
-
         </div>
       </Tabs>
     </div>
