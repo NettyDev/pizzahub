@@ -76,8 +76,8 @@ function Contact() {
                 <div className="text-base pl-9">
                   <p>
                     Telefon:{" "}
-                    <a href="tel:+48213769735" className="text-red-600 hover:text-red-700 font-semibold">
-                      +48 213 769 735
+                    <a href="tel:+48213769420" className="text-red-600 hover:text-red-700 font-semibold">
+                      +48 213 769 420
                     </a>
                   </p>
                   <p className="mt-1">

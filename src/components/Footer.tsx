@@ -22,7 +22,7 @@ export default function Footer() {
             <p className="text-base font-bold tracking-wide">Kontakt</p>
             <div className="flex">
               <p className="mr-1">Telefon:</p>
-              <p>+48 213 769 735</p>
+              <p>+48 213 769 420</p>
             </div>
             <div className="flex">
               <p className="mr-1">E-mail:</p>
@@ -45,7 +45,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex flex-col-reverse justify-between pt-5 pb-10 border-t lg:flex-row">
-          <p className="text-sm text-gray-600">© Copyright 2025 PizzaHub s.a. Wszelkie prawa zastrzeżone.</p>
+          <p className="text-sm text-gray-600">© Copyright 2025 PizzaHub. Wszelkie prawa zastrzeżone.</p>
           <p className="text-sm text-gray-600">F.A.Q</p>
           <p className="text-sm text-gray-600">Polityka Prywatności</p>
           <p className="text-sm text-gray-600">Terms</p>
