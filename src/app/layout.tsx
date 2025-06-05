@@ -5,6 +5,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+// import { createContext } from "react";
+import ChatWidget from "@/components/ChatWidget";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,8 +32,11 @@ export default function RootLayout({
           {children}
           <Footer />
           <Toaster />
+          <ChatWidget />
         </ThemeProvider>
       </body>
     </html>
   );
 }
+
+// createContext([])
