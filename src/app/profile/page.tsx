@@ -8,6 +8,8 @@ import Orders from "@/components/ProfileComponents/Orders";
 import UserAvatar from "@/components/UserAvatar";
 import StatsComponent from "@/components/ProfileComponents/StatsComponent";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
+import SpinnerCircle4 from "@/components/ui/spinner";
 
 const tabs = [
   {
@@ -31,17 +33,36 @@ const tabs = [
 ];
 
 export default function Home() {
-  return (
-    <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
-      <div className="bg-white w-full max-w-5xl shadow-2xl">
-        <Profile />
+  const { data: session, isPending, refetch } = authClient.useSession();
+  if (!isPending) {
+    if (session) {
+      return (
+        <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
+          <div className="bg-white w-full max-w-5xl shadow-2xl">
+            <Profile />
+          </div>
+        </div>
+      );
+    } else {
+      redirect("/");
+    }
+  } else {
+    return (
+      <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
+        <div className="bg-white w-full max-w-5xl shadow-2xl">
+          <div className="h-50 w-full flex flex-col gap-2 justify-center items-center">
+            <SpinnerCircle4 />
+            <p className="text-xl">Ładowanie zawartości</p>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 function Profile() {
   const { data: session, isPending, refetch } = authClient.useSession();
+
   const imie = !isPending && session ? `${session?.user.name} ${session?.user.surname}` : "";
 
   return (

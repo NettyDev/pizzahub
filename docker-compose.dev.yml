@@ -38,18 +38,5 @@ services:
     volumes:
       - ollama:/root/.ollama
 
-  s3:
-    image: minio/minio
-    ports:
-      - 19000:9000
-      - 19001:9001
-    volumes:
-      - s3:/data
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
-    command: server /data --console-address ":9001"
-
 volumes:
   ollama:
-  s3:

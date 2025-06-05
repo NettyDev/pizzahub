@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 interface MenuItemData {
   name: string;
-  imageSrc: string;
+  image: string;
   spice: number;
   ingredients: string[];
   price: {
@@ -52,7 +52,7 @@ interface PizzaCustomizationDialogProps {
 }
 
 const formatPrice = (price: number) => {
-  return price.toFixed(2).replace('.', ',') + " zł";
+  return price.toFixed(2).replace(".", ",") + " zł";
 };
 
 const THICK_CRUST_EXTRA_COST = 5; // dopłata za grube ciasto
@@ -61,7 +61,7 @@ export default function PizzaCustomizationDialog({
   isOpen,
   onOpenChange,
   pizzaData,
-  onAddToCart,
+  onAddToCart
 }: PizzaCustomizationDialogProps) {
   const [selectedSize, setSelectedSize] = useState<"small" | "medium" | "large">("medium");
   const [selectedCrust, setSelectedCrust] = useState<"thin" | "thick">("thin");
@@ -79,9 +79,7 @@ export default function PizzaCustomizationDialog({
 
   const handleToppingChange = (topping: { name: string; price: number }, checked: boolean) => {
     setSelectedToppings((prevToppings) =>
-      checked
-        ? [...prevToppings, topping]
-        : prevToppings.filter((t) => t.name !== topping.name)
+      checked ? [...prevToppings, topping] : prevToppings.filter((t) => t.name !== topping.name)
     );
   };
 
@@ -91,7 +89,7 @@ export default function PizzaCustomizationDialog({
   const calculatedPrice = useMemo(() => {
     if (!pizzaData) return 0;
     let currentPrice = pizzaData.price[selectedSize];
-    
+
     if (selectedCrust === "thick") {
       currentPrice += THICK_CRUST_EXTRA_COST;
     }
@@ -109,7 +107,7 @@ export default function PizzaCustomizationDialog({
       selectedToppings,
       quantity,
       finalPrice: calculatedPrice,
-      imageSrc: pizzaData.imageSrc,
+      imageSrc: pizzaData.image
     };
     onAddToCart(customizedPizza);
     onOpenChange(false);
@@ -127,9 +125,7 @@ export default function PizzaCustomizationDialog({
           <DialogTitle className="text-2xl">
             Dostosuj: <span className="text-red-600">{pizzaData.name}</span>
           </DialogTitle>
-          <DialogDescription>
-            Wybierz rozmiar, ciasto i dodaj ulubione składniki!
-          </DialogDescription>
+          <DialogDescription>Wybierz rozmiar, ciasto i dodaj ulubione składniki!</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-grow overflow-y-auto">
@@ -146,15 +142,15 @@ export default function PizzaCustomizationDialog({
                     <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
                     <Label
                       htmlFor={`size-${size}`}
-                      className={cn(`flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all`,
-                        selectedSize === size ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200")}
+                      className={cn(
+                        `flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all`,
+                        selectedSize === size ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200"
+                      )}
                     >
                       <span className="font-semibold text-sm capitalize">
                         {size === "small" ? "Mała" : size === "medium" ? "Średnia" : "Duża"}
                       </span>
-                      <span className="text-xs">
-                        {formatPrice(pizzaData.price[size])}
-                      </span>
+                      <span className="text-xs">{formatPrice(pizzaData.price[size])}</span>
                     </Label>
                   </div>
                 ))}
@@ -174,8 +170,10 @@ export default function PizzaCustomizationDialog({
                   <RadioGroupItem value="thin" id="crust-thin" className="sr-only" />
                   <Label
                     htmlFor="crust-thin"
-                    className={cn(`flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all h-full`,
-                      selectedCrust === "thin" ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200")}
+                    className={cn(
+                      `flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all h-full`,
+                      selectedCrust === "thin" ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200"
+                    )}
                   >
                     <span className="font-semibold text-sm">Cienkie</span>
                     <span className="text-xs">(Klasyczne)</span>
@@ -185,8 +183,10 @@ export default function PizzaCustomizationDialog({
                   <RadioGroupItem value="thick" id="crust-thick" className="sr-only" />
                   <Label
                     htmlFor="crust-thick"
-                    className={cn(`flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all h-full`,
-                      selectedCrust === "thick" ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200")}
+                    className={cn(
+                      `flex flex-col items-center justify-center rounded-md border-2 p-3 hover:border-red-500 cursor-pointer transition-all h-full`,
+                      selectedCrust === "thick" ? "border-red-600 bg-red-50 ring-2 ring-red-600" : "border-stone-200"
+                    )}
                   >
                     <span className="font-semibold text-sm">Grube</span>
                     <span className="text-xs">(+ {formatPrice(THICK_CRUST_EXTRA_COST)})</span>
@@ -198,38 +198,42 @@ export default function PizzaCustomizationDialog({
             <Separator />
 
             {baseIngredientsList.length > 0 && (
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <Label className="text-base font-semibold">Składniki bazowe:</Label>
                 <div className="flex flex-wrap gap-2">
-                    {baseIngredientsList.map((ingredient) => (
+                  {baseIngredientsList.map((ingredient) => (
                     <Badge key={ingredient} variant="secondary" className="font-normal text-sm bg-stone-200">
-                        {ingredient}
+                      {ingredient}
                     </Badge>
-                    ))}
+                  ))}
                 </div>
-                </div>
+              </div>
             )}
-            
+
             {availableToppingsList.length > 0 && (
               <div className="space-y-3">
                 <Label className="text-base font-semibold">Dodatkowe składniki:</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 max-h-60 pr-2 overflow-y-auto pretty-scrollbar">
                   {availableToppingsList.map((topping) => (
-                    <div key={topping.name} className="flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 border border-stone-200 transition-colors">
-                        <div className="flex items-center space-x-3">
-                            <Checkbox
-                                id={`topping-${topping.name.replace(/\s+/g, '-')}`}
-                                checked={selectedToppings.some(st => st.name === topping.name)}
-                                onCheckedChange={(checked) => handleToppingChange(topping, checked as boolean)}
-                                className="border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
-                            />
-                            <Label htmlFor={`topping-${topping.name.replace(/\s+/g, '-')}`} className="text-sm font-medium cursor-pointer select-none">
-                                {topping.name}
-                            </Label>
-                        </div>
-                      <span className="text-sm whitespace-nowrap">
-                        + {formatPrice(topping.price)}
-                      </span>
+                    <div
+                      key={topping.name}
+                      className="flex items-center justify-between p-2.5 rounded-md hover:bg-stone-50 border border-stone-200 transition-colors"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Checkbox
+                          id={`topping-${topping.name.replace(/\s+/g, "-")}`}
+                          checked={selectedToppings.some((st) => st.name === topping.name)}
+                          onCheckedChange={(checked) => handleToppingChange(topping, checked as boolean)}
+                          className="border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                        />
+                        <Label
+                          htmlFor={`topping-${topping.name.replace(/\s+/g, "-")}`}
+                          className="text-sm font-medium cursor-pointer select-none"
+                        >
+                          {topping.name}
+                        </Label>
+                      </div>
+                      <span className="text-sm whitespace-nowrap">+ {formatPrice(topping.price)}</span>
                     </div>
                   ))}
                 </div>
@@ -237,13 +241,32 @@ export default function PizzaCustomizationDialog({
             )}
 
             <Separator />
-            
+
             <div className="flex items-center justify-between">
               <Label className="text-base font-semibold">Ilość:</Label>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-stone-300 hover:border-red-500" onClick={handleDecreaseQuantity} disabled={quantity <= 1} aria-label="Zmniejsz ilość"> <MinusCircle className="h-4 w-4" /> </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full border-stone-300 hover:border-red-500"
+                  onClick={handleDecreaseQuantity}
+                  disabled={quantity <= 1}
+                  aria-label="Zmniejsz ilość"
+                >
+                  {" "}
+                  <MinusCircle className="h-4 w-4" />{" "}
+                </Button>
                 <span className="text-lg font-semibold w-10 text-center">{quantity}</span>
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-stone-300 hover:border-red-500" onClick={handleIncreaseQuantity} aria-label="Zwiększ ilość"> <PlusCircle className="h-4 w-4" /> </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full border-stone-300 hover:border-red-500"
+                  onClick={handleIncreaseQuantity}
+                  aria-label="Zwiększ ilość"
+                >
+                  {" "}
+                  <PlusCircle className="h-4 w-4" />{" "}
+                </Button>
               </div>
             </div>
           </div>
@@ -256,7 +279,9 @@ export default function PizzaCustomizationDialog({
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <DialogClose asChild>
-              <Button variant="outline" className="w-full sm:w-auto border-stone-300 hover:border-stone-400">Anuluj</Button>
+              <Button variant="outline" className="w-full sm:w-auto border-stone-300 hover:border-stone-400">
+                Anuluj
+              </Button>
             </DialogClose>
             <Button
               onClick={handleSubmit}

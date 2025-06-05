@@ -127,8 +127,9 @@ model Product {
   spice Int    @default(1) // poziom ostrości pizzy (pole opcjonalne)
   price Float // Może cena obliczana na podstawie użytych składników?
 
-  Product_Ingredient Product_Ingredient[]
-  ProductOrder       ProductOrder[]
+  Product_Ingredient      Product_Ingredient[]
+  ProductOrder            ProductOrder[]
+  ProductAddon_Ingredient ProductAddon_Ingredient[]
 
   @@map("product")
 }
@@ -146,6 +147,18 @@ model Product_Ingredient {
   @@map("product_ingredient")
 }
 
+// Tablica many-many dla dostępnych dodatków do pizzy
+model ProductAddon_Ingredient {
+  id Int @id @default(autoincrement())
+
+  product      Product    @relation(fields: [productId], references: [id])
+  productId    Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId Int
+
+  @@map("product_addon_ingredient")
+}
+
 // Składnik do pizz - na podstawie ich możemy określić cenę końcową oraz dostępność pizz
 
 model Ingredient {
@@ -158,6 +171,7 @@ model Ingredient {
   Product_Ingredient      Product_Ingredient[]
   Composition_Ingredient  Composition_Ingredient[]
   ProductOrder_Ingredient ProductOrder_Ingredient[]
+  ProductAddon_Ingredient ProductAddon_Ingredient[]
 
   @@map("ingredient")
 }
@@ -181,9 +195,8 @@ model DoughType {
 model Size {
   id Int @id @default(autoincrement())
 
-  name        String // mała, średnia, duża
-  description String // krótki opis - czy zostawiamy?
-  priceRatio  Float // współczynnik ceny 1, 1.2, 1.4
+  name       String // mała, średnia, duża
+  priceRatio Float // współczynnik ceny 1, 1.2, 1.4
 
   ProductOrder     ProductOrder[]
   CompositionOrder CompositionOrder[]
@@ -260,13 +273,15 @@ model CompositionOrder {
 model Order {
   id Int @id @default(autoincrement())
 
-  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId   String?
-  price    Float
-  payment  String
-  delivery String
-  status   String
-  comment  String
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId       String?
+  price        Float
+  payment      String
+  delivery     String
+  status       String
+  comment      String
+  orderDate    DateTime
+  deliveryDate DateTime
 
   orderContact   OrderContact  @relation(fields: [orderContactId], references: [id])
   orderContactId Int           @unique
