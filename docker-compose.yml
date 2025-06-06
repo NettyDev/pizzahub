@@ -1,6 +1,8 @@
 services:
   server-build:
-    build: .
+    build:
+      context: .
+      no_cache: true
     profiles: [build]
     depends_on:
       - database

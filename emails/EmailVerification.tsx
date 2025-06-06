@@ -1,7 +1,7 @@
 import { Button, Html, Section, Row, Column, Img, Head, Text, Font, Heading, Tailwind } from "@react-email/components";
 import Fonts from "./components/Fonts";
 
-export default function Email(props: { name: string; url: string }) {
+export default function EmailVerification(props: { name: string; url: string }) {
   return (
     <Html>
       <Head>

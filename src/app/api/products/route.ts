@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/database";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const pizza = await prisma.pizza.findMany({
     include: {
       Pizza_Ingredient: {
