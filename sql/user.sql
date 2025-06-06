@@ -1,0 +1,4 @@
+INSERT INTO public."user" ("id", "name", "email", "emailVerified", "image", "createdAt", "updatedAt", "agreement1", "agreement2", "agreement3", "banExpires", "banReason", "banned", "phone", "role", "surname") VALUES
+('6SSfmCStexORWMJUgQxM7vQmtZFLUMbM', 'Grzegorz', 'g.szwyngiel@pizzahub.pl', '1', NULL, '2025-06-04 11:54:27.812', '2025-06-04 11:54:27.812', '1', '1', '1', NULL, NULL, NULL, NULL, 'admin', 'Szwyngiel'),
+('FXJBaYCPnBF2YAeWwuI0s6lZdhMD1WTV', 'Nadia', 'n.zatorska@pizzahub.pl', '1', NULL, '2025-06-04 11:55:45.327', '2025-06-04 11:55:45.327', '1', '1', '1', NULL, NULL, NULL, NULL, 'admin', 'Zatorska'),
+('WzQEcCgO89ZDywmMeOrKGF39ZTB9rUcL', 'Tomasz', 'mail@example.com', '0', NULL, '2025-06-06 09:01:33.611', '2025-06-06 09:01:33.611', '1', '1', '1', NULL, NULL, NULL, NULL, 'user', 'Kowalski');

@@ -35,7 +35,7 @@ const tabs = [
 export default function Home() {
   const { data: session, isPending, refetch } = authClient.useSession();
   if (!isPending) {
-    if (session) {
+    if (session?.user) {
       return (
         <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
           <div className="bg-white w-full max-w-5xl shadow-2xl">

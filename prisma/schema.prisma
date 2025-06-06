@@ -8,8 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Wygenerowane przez better-auth
-
 model User {
   id            String    @id
   name          String
@@ -85,8 +83,6 @@ model Verification {
   @@map("verification")
 }
 
-// Koniec wygenerowanej części
-
 model Address {
   id Int @id @default(autoincrement())
 
@@ -107,168 +103,129 @@ model Company {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  nip     String
-  name    String
-  street  String
-  suite   String
-  zipcode String
-  city    String
+  nip     String?
+  name    String?
+  street  String?
+  suite   String?
+  zipcode String?
+  city    String?
 
   @@map("company")
 }
 
-// Nasze pizze w ofercie
-
-model Product {
+model Pizza {
   id Int @id @default(autoincrement())
 
-  name  String // nazwa pizzy
-  image String // link lub id obrazka
-  spice Int    @default(1) // poziom ostrości pizzy (pole opcjonalne)
-  price Float // Może cena obliczana na podstawie użytych składników?
+  name        String
+  image       String
+  spice       Int    @default(1)
+  priceSmall  Float  @default(30)
+  priceMedium Float  @default(40)
+  priceLarge  Float  @default(50)
 
-  Product_Ingredient      Product_Ingredient[]
-  ProductOrder            ProductOrder[]
-  ProductAddon_Ingredient ProductAddon_Ingredient[]
+  Pizza_Ingredient         Pizza_Ingredient[]
+  PizzaOrder               PizzaOrder[]
+  PizzaToppings_Ingredient PizzaToppings_Ingredient[]
 
-  @@map("product")
+  @@map("pizza")
 }
 
-// Tablica many-many dla pizz i składników
-
-model Product_Ingredient {
+model Pizza_Ingredient {
   id Int @id @default(autoincrement())
 
-  product      Product    @relation(fields: [productId], references: [id])
-  productId    Int
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  pizza        Pizza      @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+  pizzaId      Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   ingredientId Int
 
-  @@map("product_ingredient")
+  @@map("pizza_ingredient")
 }
 
-// Tablica many-many dla dostępnych dodatków do pizzy
-model ProductAddon_Ingredient {
+model PizzaToppings_Ingredient {
   id Int @id @default(autoincrement())
 
-  product      Product    @relation(fields: [productId], references: [id])
-  productId    Int
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  pizza        Pizza      @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+  pizzaId      Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   ingredientId Int
 
-  @@map("product_addon_ingredient")
+  @@map("pizza_toppings_ingredient")
 }
-
-// Składnik do pizz - na podstawie ich możemy określić cenę końcową oraz dostępność pizz
 
 model Ingredient {
   id Int @id @default(autoincrement())
 
-  name     String // nazwa składnika
-  quantity Int    @default(0) // ilość składników na magazynie
-  price    Float // cena
+  name                String
+  icon                String?
+  image               String?
+  zIndex              Int?
+  category            String  @default("other") // other, sauce, cheese, meat, vegetable - dla kompozytora
+  avaliableInComposer Boolean @default(false) // Czy składnik ma być w kompozytorze
+  quantity            Int     @default(0) // Ilość składników na magazynie (propozycja)
+  price               Float // Cena dla kompozytora
 
-  Product_Ingredient      Product_Ingredient[]
-  Composition_Ingredient  Composition_Ingredient[]
-  ProductOrder_Ingredient ProductOrder_Ingredient[]
-  ProductAddon_Ingredient ProductAddon_Ingredient[]
+  Pizza_Ingredient         Pizza_Ingredient[]
+  Composition_Ingredient   Composition_Ingredient[]
+  PizzaOrder_Ingredient    PizzaOrder_Ingredient[]
+  PizzaToppings_Ingredient PizzaToppings_Ingredient[]
 
   @@map("ingredient")
 }
 
-// Rodzaj ciasta do wyboru
-
-model DoughType {
+model PizzaOrder_Ingredient {
   id Int @id @default(autoincrement())
 
-  name  String // cienkie, grube
-  price Float // cena dodatkowa
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId Int
+  pizzaOrder   PizzaOrder @relation(fields: [pizzaOrderId], references: [id], onDelete: Cascade)
+  pizzaOrderId Int
 
-  ProductOrder     ProductOrder[]
-  CompositionOrder CompositionOrder[]
-
-  @@map("doughType")
+  @@map("pizza_order_ingredient")
 }
 
-// Rozmiar pizzy
-
-model Size {
+model PizzaOrder {
   id Int @id @default(autoincrement())
 
-  name       String // mała, średnia, duża
-  priceRatio Float // współczynnik ceny 1, 1.2, 1.4
+  name     String // nazwa pizzy na wypadek usunięcia pizzy z tabeli
+  pizza    Pizza? @relation(fields: [pizzaId], references: [id], onDelete: SetNull)
+  pizzaId  Int?
+  size     String // small, medium, large
+  dough    String // thin, thick
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId  Int
+  price    Float // cena za sztuke
+  quantity Int    @default(1)
 
-  ProductOrder     ProductOrder[]
-  CompositionOrder CompositionOrder[]
+  PizzaOrder_Ingredient PizzaOrder_Ingredient[]
 
-  @@map("size")
+  @@map("pizza_order")
 }
-
-// Dodatkowe składniki do gotowej pizzy
-
-model ProductOrder_Ingredient {
-  id Int @id @default(autoincrement())
-
-  ingredient     Ingredient   @relation(fields: [ingredientId], references: [id])
-  ingredientId   Int
-  productOrder   ProductOrder @relation(fields: [productOrderId], references: [id])
-  productOrderId Int
-
-  @@map("product_order_ingredient")
-}
-
-model ProductOrder {
-  id Int @id @default(autoincrement())
-
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   Int
-  size        Size      @relation(fields: [sizeId], references: [id])
-  sizeId      Int
-  doughType   DoughType @relation(fields: [doughTypeId], references: [id])
-  doughTypeId Int
-  order       Order     @relation(fields: [orderId], references: [id])
-  orderId     Int
-  price       Float // cena za sztuke
-  quantity    Int       @default(1)
-
-  ProductOrder_Ingredient ProductOrder_Ingredient[]
-
-  @@map("product_order")
-}
-
-// Składniki do kompozycji
 
 model Composition_Ingredient {
   id Int @id @default(autoincrement())
 
-  ingredient         Ingredient       @relation(fields: [ingredientId], references: [id])
+  ingredient         Ingredient       @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   ingredientId       Int
-  compositionOrder   CompositionOrder @relation(fields: [compositionOrderId], references: [id])
+  compositionOrder   CompositionOrder @relation(fields: [compositionOrderId], references: [id], onDelete: Cascade)
   compositionOrderId Int
 
   @@map("composition_ingredients")
 }
 
-// Kompozycja
-
 model CompositionOrder {
   id Int @id @default(autoincrement())
 
-  size        Size      @relation(fields: [sizeId], references: [id])
-  sizeId      Int
-  doughType   DoughType @relation(fields: [doughTypeId], references: [id])
-  doughTypeId Int
-  order       Order     @relation(fields: [orderId], references: [id])
-  orderId     Int
-  price       Float // cena po skomponowaniu pizzy za sztuke
-  quantity    Int       @default(1)
+  size     String // small, medium, large
+  dough    String // thin, thick
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId  Int
+  price    Float // cena za sztuke
+  quantity Int    @default(1)
 
   Composition_Ingredient Composition_Ingredient[]
 
   @@map("composition_order")
 }
-
-// Zamówienie
 
 model Order {
   id Int @id @default(autoincrement())
@@ -283,14 +240,14 @@ model Order {
   orderDate    DateTime
   deliveryDate DateTime
 
-  orderContact   OrderContact  @relation(fields: [orderContactId], references: [id])
+  orderContact   OrderContact  @relation(fields: [orderContactId], references: [id], onDelete: Cascade)
   orderContactId Int           @unique
-  orderAddress   OrderAddress  @relation(fields: [orderAddressId], references: [id])
+  orderAddress   OrderAddress  @relation(fields: [orderAddressId], references: [id], onDelete: Cascade)
   orderAddressId Int           @unique
-  orderCompany   OrderCompany? @relation(fields: [orderCompanyId], references: [id])
+  orderCompany   OrderCompany? @relation(fields: [orderCompanyId], references: [id], onDelete: Cascade)
   orderCompanyId Int?          @unique
 
-  ProductOrder     ProductOrder[]
+  PizzaOrder       PizzaOrder[]
   CompositionOrder CompositionOrder[]
 
   @@map("order")
