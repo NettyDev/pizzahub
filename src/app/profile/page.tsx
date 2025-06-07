@@ -10,6 +10,7 @@ import StatsComponent from "@/components/ProfileComponents/StatsComponent";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 import SpinnerCircle4 from "@/components/ui/spinner";
+import { cache } from "react";
 
 const tabs = [
   {
@@ -33,9 +34,11 @@ const tabs = [
 ];
 
 export default function Home() {
-  const { data: session, isPending, refetch } = authClient.useSession();
+  const { data: session, isPending, refetch } = cache(() => authClient.useSession())();
   if (!isPending) {
-    if (session) {
+    if (!session) {
+      redirect("/");
+    } else {
       return (
         <div className="w-full bg-[url(/pizza-pattern.png)] flex justify-center">
           <div className="bg-white w-full max-w-5xl shadow-2xl">
@@ -43,8 +46,6 @@ export default function Home() {
           </div>
         </div>
       );
-    } else {
-      redirect("/");
     }
   } else {
     return (

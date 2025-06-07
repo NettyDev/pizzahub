@@ -3,6 +3,9 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
 import { prisma } from "@/lib/database";
 import { transporter } from "./mail";
+import { render } from "@react-email/components";
+import { createElement } from "react";
+import EmailVerification from "../../emails/EmailVerification";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -16,7 +19,8 @@ export const auth = betterAuth({
       await transporter.sendMail({
         to: user.email,
         subject: "Verify your email address",
-        text: `CLick the link to verify your email: ${url}`
+        text: `CLick the link to verify your email: ${url}`,
+        html: await render(createElement(EmailVerification, { name: user.name, url }))
       });
     }
   },

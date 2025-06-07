@@ -53,8 +53,14 @@ function Cart() {
   // const [newsletterAccepted, setNewsletterAccepted] = useState(false); // Dla drugiego checkboxa, jeśli chcesz śledzić jego stan
 
   const [cartItems, setCartItems] = useState<CartItem[]>([
-    { id: 1, name: "Pizza Hawajska", quantity: 1, pricePerUnit: 80.0 },
-    { id: 2, name: "Coca-Cola 0.5l", quantity: 2, pricePerUnit: 5.0 }
+    {
+      id: 1,
+      name: "Testosteron na cieście",
+      quantity: 1,
+      pricePerUnit: 80.0,
+      toppings: [{ id: 1, name: "Jalapenio", price: 2 }]
+    },
+    { id: 2, name: "Coca-Cola 0.5l", quantity: 2, pricePerUnit: 5.0, toppings: [] }
   ]);
 
   const [summaryData, setSummaryData] = useState<CartSummaryData>({

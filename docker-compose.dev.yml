@@ -1,4 +1,10 @@
 services:
+  server:
+    image: localhost/next:latest
+    profiles: [full]
+    ports:
+      - 3000:3000
+
   database:
     image: "postgres:17-alpine"
     ports:
@@ -33,6 +39,7 @@ services:
 
   ai:
     image: ollama/ollama
+    profiles: [ai]
     ports:
       - 11434:11434
     volumes:
