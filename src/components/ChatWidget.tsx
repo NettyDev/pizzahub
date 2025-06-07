@@ -11,7 +11,9 @@ interface ChatMessage {
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chatWindowRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +38,7 @@ export default function ChatWidget() {
 
     const newUserMessage: ChatMessage = {
       role: "user",
-      content: inputMessage.trim()
+      content: inputMessage.trim(),
     };
 
     setConversationHistory((prev) => [...prev, newUserMessage]);
@@ -49,12 +51,12 @@ export default function ChatWidget() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: currentInput.trim(),
-          history: [...conversationHistory, newUserMessage]
-        })
+          history: [...conversationHistory, newUserMessage],
+        }),
       });
 
       setIsLoading(false);
@@ -69,17 +71,22 @@ export default function ChatWidget() {
       if (data.history) {
         setConversationHistory(data.history);
       } else if (data.reply) {
-        const aiResponse: ChatMessage = { role: "assistant", content: data.reply };
+        const aiResponse: ChatMessage = {
+          role: "assistant",
+          content: data.reply,
+        };
         setConversationHistory((prev) => [...prev, aiResponse]);
       }
     } catch (error) {
       setIsLoading(false);
       console.error("Błąd podczas wysyłania wiadomości:", error);
       const errorMessageContent =
-        error instanceof Error ? error.message : "Nie udało się pobrać odpowiedzi. Sprawdź konsolę.";
+        error instanceof Error
+          ? error.message
+          : "Nie udało się pobrać odpowiedzi. Sprawdź konsolę.";
       const errorMessage: ChatMessage = {
         role: "assistant",
-        content: `Błąd: ${errorMessageContent}`
+        content: `Błąd: ${errorMessageContent}`,
       };
       setConversationHistory((prev) => [...prev, errorMessage]);
     }
@@ -94,7 +101,11 @@ export default function ChatWidget() {
   useEffect(() => {
     if (isOpen && conversationHistory.length === 0) {
       setConversationHistory([
-        { role: "assistant", content: "Cześć! Jestem Pizzi, jak mogę Ci pomóc z zamówieniem w PizzaHub?" }
+        {
+          role: "assistant",
+          content:
+            "Cześć! Jestem Pizzi, jak mogę Ci pomóc z zamówieniem w PizzaHub?",
+        },
       ]);
     }
   }, [isOpen]);
@@ -116,12 +127,19 @@ export default function ChatWidget() {
               <Bot size={20} />
               <h2 className="text-md font-semibold">Pizzi</h2>
             </div>
-            <button onClick={toggleChat} className="text-white hover:text-white" aria-label="Zamknij chat">
+            <button
+              onClick={toggleChat}
+              className="text-white hover:text-white"
+              aria-label="Zamknij chat"
+            >
               <X size={20} />
             </button>
           </header>
 
-          <div ref={chatWindowRef} className="flex-grow p-3 space-y-3 overflow-y-auto bg-stone-50">
+          <div
+            ref={chatWindowRef}
+            className="flex-grow p-3 space-y-3 overflow-y-auto bg-stone-50"
+          >
             {conversationHistory.map((msg, index) => (
               <div
                 key={index}
@@ -153,13 +171,18 @@ export default function ChatWidget() {
                 <div className="p-1.5 bg-red-700 text-white rounded-full self-start animate-pulse">
                   <Bot size={16} />
                 </div>
-                <div className="px-3 py-2 rounded-xl bg-gray-200 text-black italic text-sm">PizzaBot pisze...</div>
+                <div className="px-3 py-2 rounded-xl bg-gray-200 text-black italic text-sm">
+                  Pizzi pisze...
+                </div>
               </div>
             )}
           </div>
 
           <footer className="p-3 bg-gray-100 border-t border-gray-200">
-            <form onSubmit={handleSubmit} className="flex space-x-2 items-center">
+            <form
+              onSubmit={handleSubmit}
+              className="flex space-x-2 items-center"
+            >
               <input
                 ref={inputRef}
                 type="text"
