@@ -19,8 +19,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle, MinusCircle, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useCartState } from "./CartContext";
 
 interface MenuItemData {
+  id: number;
   name: string;
   image: string;
   spice: number;
@@ -31,14 +33,14 @@ interface MenuItemData {
     large: number;
   };
   baseIngredients?: string[];
-  availableToppings?: Array<{ name: string; price: number }>;
+  availableToppings?: Array<{ id: number; name: string; price: number }>;
 }
 
 export interface CustomizedPizzaData {
   basePizzaName: string;
   selectedCrust: "thin" | "thick";
   selectedSize: "small" | "medium" | "large";
-  selectedToppings: Array<{ name: string; price: number }>;
+  selectedToppings: Array<{ id: number; name: string; price: number }>;
   quantity: number;
   finalPrice: number;
   imageSrc?: string;
@@ -65,7 +67,7 @@ export default function PizzaCustomizationDialog({
 }: PizzaCustomizationDialogProps) {
   const [selectedSize, setSelectedSize] = useState<"small" | "medium" | "large">("medium");
   const [selectedCrust, setSelectedCrust] = useState<"thin" | "thick">("thin");
-  const [selectedToppings, setSelectedToppings] = useState<Array<{ name: string; price: number }>>([]);
+  const [selectedToppings, setSelectedToppings] = useState<Array<{ id: number; name: string; price: number }>>([]);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function PizzaCustomizationDialog({
     }
   }, [pizzaData]);
 
-  const handleToppingChange = (topping: { name: string; price: number }, checked: boolean) => {
+  const handleToppingChange = (topping: { id: number; name: string; price: number }, checked: boolean) => {
     setSelectedToppings((prevToppings) =>
       checked ? [...prevToppings, topping] : prevToppings.filter((t) => t.name !== topping.name)
     );
@@ -98,8 +100,21 @@ export default function PizzaCustomizationDialog({
     return (currentPrice + toppingsPrice) * quantity;
   }, [pizzaData, selectedSize, selectedCrust, selectedToppings, quantity]);
 
+  const { add } = useCartState();
+
   const handleSubmit = () => {
     if (!pizzaData) return;
+
+    add({
+      id: pizzaData.id,
+      name: pizzaData.name,
+      price: pizzaData.price[selectedSize],
+      quantity,
+      crust: selectedCrust,
+      size: selectedSize,
+      toppings: selectedToppings
+    });
+
     const customizedPizza: CustomizedPizzaData = {
       basePizzaName: pizzaData.name,
       selectedCrust,

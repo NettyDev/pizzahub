@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 // import { createContext } from "react";
 import ChatWidget from "@/components/ChatWidget";
+import { CartProvider } from "@/components/CartContext";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -28,11 +29,13 @@ export default function RootLayout({
     <html lang="pl">
       <body className={`${poppins.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <Header />
-          {children}
-          <Footer />
-          <Toaster />
-          <ChatWidget />
+          <CartProvider>
+            <Header />
+            {children}
+            <Footer />
+            <Toaster />
+            <ChatWidget />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>

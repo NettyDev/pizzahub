@@ -4,6 +4,7 @@ export interface CartItem {
   quantity: number;
   pricePerUnit: number;
   description?: string;
+  toppings?: { id: number; name: string; price: number }[];
 }
 
 export interface CartSummaryData {

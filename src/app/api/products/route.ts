@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
     },
     ingredients: v.Pizza_Ingredient.map((v) => v.ingredient.name),
     availableToppings: v.PizzaToppings_Ingredient.map((v) => ({
+      id: v.ingredientId,
       name: v.ingredient.name,
       price: v.ingredient.price
     }))
