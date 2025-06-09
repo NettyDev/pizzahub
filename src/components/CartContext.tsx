@@ -1,4 +1,5 @@
 "use client";
+
 import { useContext, createContext, useState, type PropsWithChildren, useEffect } from "react";
 
 interface Toppings {
@@ -7,7 +8,7 @@ interface Toppings {
   price: number;
 }
 
-interface Pizza {
+export interface Pizza {
   id: number;
   name: string;
   price: number;
@@ -23,7 +24,7 @@ interface CompositionSauce {
   price: number;
 }
 
-interface Composition {
+export interface Composition {
   name: string;
   sauce: CompositionSauce | undefined;
   toppings: Toppings[];
@@ -39,7 +40,7 @@ interface ICartContext {
   deliveryIncluded: boolean;
   add: (data: Pizza | Composition) => void;
   remove: (idx: number) => void;
-  changeAmount: (action: "inc" | "dec", idx: number) => void;
+  changeAmount: (newValue: number, idx: number) => void;
   clear: () => void;
 }
 // @ts-ignore
@@ -57,36 +58,81 @@ export const CartProvider = ({
   useEffect(() => {
     setTotalPrice(
       cart
-        .map((v) =>
-          v.crust == "thick"
+        .map((v) => {
+          if ("sauce" in v) {
+            return v.crust == "thick" ? (v.price + 5) * v.quantity : v.price * v.quantity;
+          }
+          return v.crust == "thick"
             ? (v.price + 5 + v.toppings.reduce((a, b) => a + b.price, 0)) * v.quantity
-            : (v.price + v.toppings.reduce((a, b) => a + b.price, 0)) * v.quantity
-        )
+            : (v.price + v.toppings.reduce((a, b) => a + b.price, 0)) * v.quantity;
+        })
         .reduce((a, b) => a + b, 0)
     );
   }, [cart]);
 
-  const add: ICartContext["add"] = (data) => {
-    setCart((v) => [...v, data]);
+  const add: ICartContext["add"] = (data: Pizza | Composition) => {
+    console.log(data);
+    if ("id" in data) {
+      const idxs = cart.filter((v) => "id" in v && v.id == data.id) as Pizza[];
+      if (idxs.length > 0) {
+        for (const item of idxs) {
+          let isSame = true;
+          if (item.crust !== data.crust) isSame = false;
+          if (item.size !== data.size) isSame = false;
+          if (
+            !deepEqual(
+              item.toppings.sort((a, b) => a.name.localeCompare(b.name)),
+              data.toppings.sort((a, b) => a.name.localeCompare(b.name))
+            )
+          )
+            isSame = false;
+          if (isSame)
+            return changeAmount(
+              item.quantity + 1,
+              cart.findIndex((v) => v == item)
+            );
+        }
+      }
+      setCart((v) => [...v, data]);
+    } else {
+      const comps = cart.filter((v) => "sauce" in v) as Composition[];
+      if (comps.length > 0) {
+        for (const item of comps) {
+          let isSame = true;
+          if (item.crust !== data.crust) isSame = false;
+          if (item.size !== data.size) isSame = false;
+          if (item.sauce && data.sauce && !deepEqual(item.sauce, data.sauce)) isSame = false;
+          if (
+            !deepEqual(
+              item.toppings.sort((a, b) => a.name.localeCompare(b.name)),
+              data.toppings.sort((a, b) => a.name.localeCompare(b.name))
+            )
+          )
+            isSame = false;
+          if (isSame)
+            return changeAmount(
+              item.quantity + 1,
+              cart.findIndex((v) => v == item)
+            );
+        }
+      }
+      setCart((v) => [...v, data]);
+    }
   };
 
   const remove: ICartContext["remove"] = (idx) => {
     setCart((v) => v.filter((v, i) => i !== idx));
   };
 
-  const changeAmount: ICartContext["changeAmount"] = (action, idx) => {
-    setCart((v) => {
-      const copy = Array.from(v);
-      switch (action) {
-        case "dec":
-          if (copy[idx].quantity > 1) copy[idx].quantity--;
-          break;
-        case "inc":
-          if (copy[idx].quantity < 5) copy[idx].quantity++;
-          break;
-      }
-      return copy;
-    });
+  const changeAmount: ICartContext["changeAmount"] = (newValue, idx) => {
+    if (newValue <= 0) return remove(idx);
+    setCart((v) =>
+      v.map((item, idxItem) => {
+        if (idxItem !== idx) return item;
+        item.quantity = newValue;
+        return item;
+      })
+    );
   };
 
   const clear = () => setCart([]);
@@ -107,3 +153,28 @@ export const CartProvider = ({
     </context.Provider>
   );
 };
+
+function deepEqual(obj1: { [x: string]: any } | null, obj2: { [x: string]: any } | null) {
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  if (obj1 == null || typeof obj1 !== "object" || obj2 == null || typeof obj2 !== "object") {
+    return false;
+  }
+
+  let keys1 = Object.keys(obj1);
+  let keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (let key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
+}

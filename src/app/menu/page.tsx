@@ -29,7 +29,7 @@ interface MenuItemData {
     large: number;
   };
   baseIngredients?: string[];
-  availableToppings?: { name: string; price: number }[];
+  availableToppings?: { id: number; name: string; price: number }[];
 }
 
 function SpiceMeter({ level, size = "normal" }: { level: number; size?: "small" | "normal" }) {

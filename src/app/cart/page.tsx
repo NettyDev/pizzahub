@@ -14,6 +14,7 @@ import ContactForm from "@/components/CartComponents/ContactForm";
 import FormInput from "@/components/CartComponents/FormInput";
 import type { CartSummaryData, CartItem, ContactFormData, DeliveryFormData } from "@/components/CartComponents/types";
 import { Plus } from "lucide-react";
+import { Composition, Pizza, useCartState } from "@/components/CartContext";
 
 const delivery_options_cart = [
   { value: "delivery", label: "Dostawa" },
@@ -39,6 +40,7 @@ export default function CartPage() {
 }
 
 function Cart() {
+  const { cart, remove, changeAmount, totalPrice, deliveryIncluded } = useCartState();
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(delivery_options_cart[0].value);
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState(delivery_time_options_cart[0].value);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -51,68 +53,6 @@ function Cart() {
 
   const [termsAccepted, setTermsAccepted] = useState(false);
   // const [newsletterAccepted, setNewsletterAccepted] = useState(false); // Dla drugiego checkboxa, jeśli chcesz śledzić jego stan
-
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Testosteron na cieście",
-      quantity: 1,
-      pricePerUnit: 80.0,
-      toppings: [{ id: 1, name: "Jalapenio", price: 2 }]
-    },
-    { id: 2, name: "Coca-Cola 0.5l", quantity: 2, pricePerUnit: 5.0, toppings: [] }
-  ]);
-
-  const [summaryData, setSummaryData] = useState<CartSummaryData>({
-    items: [],
-    subTotal: 0,
-    deliveryCost: 0,
-    total: 0,
-    deliveryInfo: ""
-  });
-
-  const handleRemoveItemFromCart = (itemId: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-  };
-
-  const handleUpdateItemQuantity = (itemId: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      handleRemoveItemFromCart(itemId);
-    } else {
-      setCartItems((prevItems) =>
-        prevItems.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item))
-      );
-    }
-  };
-
-  useEffect(() => {
-    const newSubTotal = cartItems.reduce((sum, item) => sum + item.pricePerUnit * item.quantity, 0);
-    let newDeliveryCost = 0;
-    let deliveryInfoText = "Wybrano opcję bez kosztów dostawy.";
-
-    if (selectedDeliveryMethod === "delivery") {
-      if (newSubTotal > 0 && newSubTotal < 70) {
-        newDeliveryCost = 10.0;
-        deliveryInfoText = `Koszt dostawy: ${newDeliveryCost.toFixed(2).replace(".", ",")} zł. Min. zamówienie dla darmowej dostawy: 70,00 zł.`;
-      } else if (newSubTotal >= 30) {
-        newDeliveryCost = 0;
-        deliveryInfoText = "Dostawa gratis! (zamówienie powyżej 70,00 zł)";
-      } else if (newSubTotal === 0) {
-        newDeliveryCost = 0;
-        deliveryInfoText = "Dodaj coś do koszyka, aby obliczyć koszt dostawy.";
-      }
-    }
-
-    const newTotal = newSubTotal + newDeliveryCost;
-
-    setSummaryData({
-      items: cartItems,
-      subTotal: newSubTotal,
-      deliveryCost: newDeliveryCost,
-      total: newTotal,
-      deliveryInfo: deliveryInfoText
-    });
-  }, [cartItems, selectedDeliveryMethod]);
 
   return (
     <>
@@ -237,9 +177,9 @@ function Cart() {
                 Twoje zamówienie
               </h2>
               <Summary
-                summaryData={summaryData}
-                onRemoveItem={handleRemoveItemFromCart}
-                onUpdateQuantity={handleUpdateItemQuantity}
+                isDelivery={selectedDeliveryMethod == "delivery"}
+                // onRemoveItem={handleRemoveItemFromCart}
+                // onUpdateQuantity={handleUpdateItemQuantity}
               />
             </div>
           </div>

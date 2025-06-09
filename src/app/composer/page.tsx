@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
 import SpinnerCircle4 from "@/components/ui/spinner";
+import { useCartState } from "@/components/CartContext";
 
 const THICK_CRUST_EXTRA_COST = 5;
 
@@ -44,6 +45,7 @@ interface CartPizzaItem {
 }
 
 export default function ComposerPage() {
+  const { add } = useCartState();
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     fetch("/api/composer")
@@ -97,6 +99,17 @@ export default function ComposerPage() {
       unitPrice: totalPrice / quantity,
       totalPrice
     };
+
+    add({
+      name: "Kompozycja",
+      size: selectedSize.id,
+      crust: selectedCrust,
+      sauce: selectedSauce && { id: selectedSauce?.id, name: selectedSauce?.name, price: selectedSauce?.price },
+      price: cleanPrice,
+      quantity,
+      toppings: selectedToppings.map((v) => ({ id: v.id, name: v.name, price: v.price }))
+    });
+
     console.log("Dodano do koszyka:", cartItem);
     toast.success("Pizza skomponowana i dodana do koszyka!", {
       description: `Rozmiar: ${selectedSize.name}, Ciasto: ${selectedCrust === "thin" ? "Cienkie" : "Grube"}, Cena: ${formatPrice(totalPrice)}`
@@ -111,6 +124,12 @@ export default function ComposerPage() {
     return (sizePrice + crustPrice + saucePrice + toppingsPrice) * quantity;
   }, [selectedSize, selectedCrust, selectedSauce, selectedToppings, quantity]);
 
+  const cleanPrice = useMemo(() => {
+    const sizePrice = selectedSize?.basePrice ?? 0;
+    const saucePrice = selectedSauce?.price ?? 0;
+    const toppingsPrice = selectedToppings.reduce((sum, t) => sum + (t.price ?? 0), 0);
+    return sizePrice + saucePrice + toppingsPrice;
+  }, [selectedSize, selectedSauce, selectedToppings]);
   const getCategoryIcon = (category: PizzaTopping["category"]): React.ReactNode => {
     switch (category) {
       case "meat":
@@ -267,13 +286,17 @@ export default function ComposerPage() {
                       <div>
                         <Label className="text-base font-semibold mb-2.5 block">Wybierz sos</Label>
                         <RadioGroup
-                          value={selectedSauce?.id}
-                          onValueChange={(value) => handleSauceChange(value as PizzaSauce["id"])}
+                          value={selectedSauce?.id.toString()}
+                          onValueChange={(value) => handleSauceChange(parseInt(value) as PizzaSauce["id"])}
                           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3"
                         >
                           {pizzaSauces.map((sauce) => (
                             <div key={sauce.id}>
-                              <RadioGroupItem value={sauce.id} id={`sauce-${sauce.id}`} className="sr-only" />
+                              <RadioGroupItem
+                                value={sauce.id.toString()}
+                                id={`sauce-${sauce.id}`}
+                                className="sr-only"
+                              />
                               <Label
                                 htmlFor={`sauce-${sauce.id}`}
                                 className={cn(

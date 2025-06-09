@@ -7,7 +7,7 @@ export interface PizzaSize {
 }
 
 export interface PizzaSauce {
-  id: string;
+  id: number;
   name: string;
   price: number;
   image: string;
@@ -15,7 +15,7 @@ export interface PizzaSauce {
 }
 
 export interface PizzaTopping {
-  id: string;
+  id: number;
   name: string;
   price: number;
   image: string;
