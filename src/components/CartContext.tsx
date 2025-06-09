@@ -38,6 +38,7 @@ interface ICartContext {
   cart: (Pizza | Composition)[];
   totalPrice: number;
   deliveryIncluded: boolean;
+  isLocalStorageUpdated?: boolean;
   add: (data: Pizza | Composition) => void;
   remove: (idx: number) => void;
   changeAmount: (newValue: number, idx: number) => void;
@@ -54,6 +55,20 @@ export const CartProvider = ({
 }: PropsWithChildren & { deliveryTreshhold?: number }) => {
   const [cart, setCart] = useState<(Pizza | Composition)[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [isLocalStorageUpdated, setIsLocalStorageUpdated] = useState(false);
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+    setIsLocalStorageUpdated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLocalStorageUpdated) return;
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   useEffect(() => {
     setTotalPrice(
@@ -68,10 +83,10 @@ export const CartProvider = ({
         })
         .reduce((a, b) => a + b, 0)
     );
+    // localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const add: ICartContext["add"] = (data: Pizza | Composition) => {
-    console.log(data);
     if ("id" in data) {
       const idxs = cart.filter((v) => "id" in v && v.id == data.id) as Pizza[];
       if (idxs.length > 0) {
@@ -88,7 +103,7 @@ export const CartProvider = ({
             isSame = false;
           if (isSame)
             return changeAmount(
-              item.quantity + 1,
+              item.quantity + data.quantity,
               cart.findIndex((v) => v == item)
             );
         }
@@ -111,7 +126,7 @@ export const CartProvider = ({
             isSame = false;
           if (isSame)
             return changeAmount(
-              item.quantity + 1,
+              item.quantity + data.quantity,
               cart.findIndex((v) => v == item)
             );
         }
@@ -143,6 +158,7 @@ export const CartProvider = ({
         cart,
         totalPrice,
         deliveryIncluded: totalPrice > deliveryTreshhold,
+        isLocalStorageUpdated,
         add,
         remove,
         changeAmount,

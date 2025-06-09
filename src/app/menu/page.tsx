@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import CustomizationDialog, { CustomizedPizzaData } from "@/components/CustomizationDialog";
 import { toast } from "sonner";
 import SpinnerCircle4 from "@/components/ui/spinner";
+import { redirect } from "next/navigation";
 
 interface MenuItemData {
   id: number;
@@ -212,7 +213,7 @@ export default function MenuPage() {
       action: {
         label: "Koszyk",
         onClick: () => {
-          console.log("Przejdź do koszyka");
+          redirect("/cart");
         }
       }
     });

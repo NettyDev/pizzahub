@@ -3,7 +3,6 @@
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Info, X as XIcon, ShoppingBag, MinusCircle, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { CartSummaryData } from "./types";
 import { toast } from "sonner";
 import Link from "next/link";
 import clsx from "clsx";

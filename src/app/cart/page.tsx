@@ -13,8 +13,9 @@ import DeliveryForm from "@/components/CartComponents/DeliveryForm";
 import ContactForm from "@/components/CartComponents/ContactForm";
 import FormInput from "@/components/CartComponents/FormInput";
 import type { CartSummaryData, CartItem, ContactFormData, DeliveryFormData } from "@/components/CartComponents/types";
-import { Plus } from "lucide-react";
+import { Plus, ShoppingBag } from "lucide-react";
 import { Composition, Pizza, useCartState } from "@/components/CartContext";
+import SpinnerCircle4 from "@/components/ui/spinner";
 
 const delivery_options_cart = [
   { value: "delivery", label: "Dostawa" },
@@ -40,7 +41,7 @@ export default function CartPage() {
 }
 
 function Cart() {
-  const { cart, remove, changeAmount, totalPrice, deliveryIncluded } = useCartState();
+  const { isLocalStorageUpdated } = useCartState();
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(delivery_options_cart[0].value);
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState(delivery_time_options_cart[0].value);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -173,14 +174,25 @@ function Cart() {
 
           <div className="w-full lg:w-[50%] xl:w-3/7">
             <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 border-2 border-red-600 lg:sticky lg:top-46">
-              <h2 className="text-xl sm:text-2xl font-bold text-red-700 tracking-wide mb-6 text-center">
-                Twoje zamówienie
-              </h2>
-              <Summary
-                isDelivery={selectedDeliveryMethod == "delivery"}
-                // onRemoveItem={handleRemoveItemFromCart}
-                // onUpdateQuantity={handleUpdateItemQuantity}
-              />
+              {isLocalStorageUpdated ? (
+                <>
+                  <h2 className="text-xl sm:text-2xl font-bold text-red-700 tracking-wide mb-6 text-center">
+                    Twoje zamówienie
+                  </h2>
+                  <Summary
+                    isDelivery={selectedDeliveryMethod == "delivery"}
+                    // onRemoveItem={handleRemoveItemFromCart}
+                    // onUpdateQuantity={handleUpdateItemQuantity}
+                  />
+                </>
+              ) : (
+                <div className="h-50 w-full flex flex-col gap-2 justify-center items-center">
+                  <SpinnerCircle4 />
+                  <p className="text-xl flex gap-2">
+                    Ładowanie koszyka <ShoppingBag />
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

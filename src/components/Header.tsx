@@ -109,17 +109,12 @@ export default function Header() {
             <div className="hidden md:flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {mainNavLinks.map((link) => (
+                  {mainNavLinks.map((link, idx) => (
                     <NavigationMenuItem key={link.href}>
                       <Link href={link.href} passHref>
-                        <NavigationMenuLink
-                          className={cn(
-                            // navigationMenuTriggerStyle(),
-                            "hover:bg-red-50 hover:text-red-700 transition-colors text-sm flex flex-row items-center"
-                          )}
-                        >
+                        <div className="hover:bg-red-50 hover:text-red-700 p-2 transition-colors text-sm flex flex-row items-center gap-1 rounded-sm">
                           <link.icon className="h-4 w-4 mr-1" /> {link.label}
-                        </NavigationMenuLink>
+                        </div>
                       </Link>
                     </NavigationMenuItem>
                   ))}
