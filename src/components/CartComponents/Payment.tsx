@@ -9,11 +9,16 @@ const pay_options = [
   { value: "cash", icon: Banknote, label: "Gotówka", description: "Płatność przy odbiorze" }
 ];
 
-export default function PaymentMethod() {
+interface PaymentMethodProps {
+  onChange?: (value: string) => void;
+}
+
+export default function PaymentMethod({ onChange }: PaymentMethodProps) {
   return (
     <RadioGroup
       defaultValue={pay_options[0].value}
       className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      onValueChange={onChange}
     >
       {pay_options.map((option) => (
         <RadioGroupItem

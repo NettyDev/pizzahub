@@ -60,7 +60,19 @@ function Cart() {
     totalPrice: number,
     deliveryPrice: number,
     clear: () => void
-  ) => {};
+  ) => {
+    const summmary = {
+      cart,
+      totalPrice,
+      deliveryPrice,
+      selectedDeliveryMethod,
+      selectedDeliveryTime,
+      selectedDate,
+      selectedHour
+    };
+
+    console.log("Zamówienie do przetworzenia:", summmary);
+  };
 
   return (
     <>
@@ -72,7 +84,7 @@ function Cart() {
           <div className="w-full lg:w-[60%] xl:w-2/3 flex flex-col gap-8">
             <section className="bg-white rounded-lg shadow-lg p-6 sm:p-8 border border-stone-200">
               <h2 className="text-xl sm:text-2xl mb-6 text-shadow-xs">Płatność</h2>
-              <PaymentMethod />
+              <PaymentMethod onChange={console.log} />
             </section>
 
             <section className="bg-white rounded-lg shadow-lg p-6 sm:p-8 border border-stone-200">
