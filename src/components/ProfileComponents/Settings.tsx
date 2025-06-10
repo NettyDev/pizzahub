@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { CheckIcon, MinusIcon } from "lucide-react";
 import * as React from "react";
+import { useDebounce } from "use-debounce";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { deepEqual } from "../CartContext";
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -74,6 +79,151 @@ export default function Settings() {
   const [company, setCompany] = React.useState(false);
   const { data: session, isPending, refetch } = authClient.useSession();
 
+  React.useEffect(() => {
+    if (isPending || !session || accountData.firstName !== "" || accountData.lastName !== "") return;
+    setAccountData({
+      firstName: session.user.name || "",
+      lastName: session.user.surname || "",
+      phone: session.user.phone || ""
+    });
+  }, [session, isPending]);
+
+  const [accountData, setAccountData] = React.useState({
+    firstName: "",
+    lastName: "",
+    phone: ""
+  });
+
+  const [debounced] = useDebounce(accountData, 2500);
+
+  React.useEffect(() => {
+    if (isPending || !session || accountData.firstName === "" || accountData.lastName === "") return;
+    console.log("Zapisuję dane konta:", debounced);
+    if (
+      debounced.firstName !== session.user.name ||
+      debounced.lastName !== session.user.surname ||
+      debounced.phone !== session.user.phone
+    ) {
+      const schema = z
+        .object({
+          firstName: z.string().min(1, "Imię jest wymagane"),
+          lastName: z.string().min(1, "Nazwisko jest wymagane"),
+          phone: z.union([
+            z
+              .string()
+              .regex(/^(\+48\s?)?\d{3}[\s-]?\d{3}[\s-]?\d{3}$/, "Telefon musi być w poprawnym formacie polskim"),
+            z.literal("")
+          ])
+        })
+        .safeParse(debounced);
+      if (!schema.success) {
+        toast.error(
+          <ul>
+            {schema.error.errors.map((e) => (
+              <li key={e.path.join(".")}>{e.message}</li>
+            ))}
+          </ul>
+        );
+      } else {
+        authClient
+          .updateUser({
+            name: debounced.firstName,
+            surname: debounced.lastName,
+            phone: debounced.phone
+          })
+          .then(() => {
+            toast.success("Dane konta zostały zaktualizowane.");
+          });
+      }
+    }
+  }, [debounced]);
+
+  const [isAddressLoading, setIsAddressLoading] = React.useState(true);
+  const [oldAddress, setOldAddress] = React.useState({
+    street: "",
+    suite: "",
+    zipCode: "",
+    city: ""
+  });
+  const [address, setAddress] = React.useState({
+    street: "",
+    suite: "",
+    zipCode: "",
+    city: ""
+  });
+
+  React.useEffect(() => {
+    fetch("/api/profile/address")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setAddress({
+            street: data.address.street || "",
+            suite: data.address.suite || "",
+            zipCode: data.address.zipCode || "",
+            city: data.address.city || ""
+          });
+          setOldAddress({
+            street: data.address.street || "",
+            suite: data.address.suite || "",
+            zipCode: data.address.zipCode || "",
+            city: data.address.city || ""
+          });
+          setIsAddressLoading(false);
+          console.log("Pobrano adres:", data.address);
+        } else {
+          toast.error("Wystąpił błąd podczas pobierania adresu.");
+        }
+      });
+  }, []);
+
+  const [debouncedAddress] = useDebounce(address, 2500);
+
+  React.useEffect(() => {
+    if (isPending || !session || isAddressLoading || deepEqual(oldAddress, address)) return;
+    console.log("Zapisuję adres:", debouncedAddress);
+
+    const schema = z
+      .object({
+        street: z.string(),
+        suite: z.string(),
+        zipCode: z.union([z.string().regex(/^\d{2}-\d{3}$/, "Kod pocztowy musi być w formacie XX-XXX"), z.literal("")]),
+        city: z.string()
+      })
+      .safeParse(debouncedAddress);
+
+    if (!schema.success) {
+      toast.error(
+        <ul>
+          {schema.error.errors.map((e) => (
+            <li key={e.path.join(".")}>{e.message}</li>
+          ))}
+        </ul>
+      );
+      return;
+    }
+
+    fetch("/api/profile/address", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ address: debouncedAddress })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setOldAddress(debouncedAddress);
+          toast.success("Adres został zaktualizowany.");
+        } else {
+          toast.error("Wystąpił błąd podczas aktualizacji adresu.");
+        }
+      })
+      .catch(() => {
+        toast.error("Wystąpił błąd podczas aktualizacji adresu.");
+      });
+  }, [debouncedAddress]);
+
   return (
     <div className="p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="flex items-center gap-2 mb-4">
@@ -84,10 +234,46 @@ export default function Settings() {
           <div className="w-full mb-10">
             <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Dane konta</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-              <FormInput label="Imię" id="firstName" placeholder="Tomasz" required />
-              <FormInput label="Nazwisko" id="lastName" placeholder="Kowalski" required />
-              <FormInput label="Telefon" id="phone" placeholder="123-456-789" type="tel" />
-              <FormInput label="E-mail" id="email" placeholder="mail@example.com" type="mail" required />
+              <FormInput
+                label="Imię"
+                id="firstName"
+                placeholder="Tomasz"
+                required
+                value={accountData.firstName}
+                onChange={(e) => setAccountData({ ...accountData, firstName: e.target.value })}
+              />
+              <FormInput
+                label="Nazwisko"
+                id="lastName"
+                placeholder="Kowalski"
+                required
+                value={accountData.lastName}
+                onChange={(e) => setAccountData({ ...accountData, lastName: e.target.value })}
+              />
+              <FormInput
+                label="Telefon"
+                id="phone"
+                placeholder="123-456-789"
+                type="tel"
+                value={accountData.phone}
+                onChange={(e) => setAccountData({ ...accountData, phone: e.target.value })}
+              />
+              <Tooltip>
+                <TooltipTrigger>
+                  <FormInput
+                    label="E-mail"
+                    id="email"
+                    placeholder="mail@example.com"
+                    type="mail"
+                    value={session?.user.email || ""}
+                    required
+                    disabled
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Nie możesz zmienić swojego adresu e-mail.</p>
+                </TooltipContent>
+              </Tooltip>
               <div className="sm:col-span-2">
                 <Button className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200">
                   Zmień hasło
@@ -98,10 +284,34 @@ export default function Settings() {
           <div className="w-full mb-10">
             <h3 className="text-2xl font-semibold mb-4 text-shadow-xs">Adres dostawy</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-              <FormInput label="Ulica" id="street" placeholder="Malinowa" />
-              <FormInput label="Numer domu / mieszkania" id="houseNumber" placeholder="10A / 2" />
-              <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" />
-              <FormInput label="Miasto" id="city" placeholder="Radomsko" />
+              <FormInput
+                label="Ulica"
+                id="street"
+                placeholder="Malinowa"
+                value={address.street}
+                onChange={(e) => setAddress({ ...address, street: e.target.value })}
+              />
+              <FormInput
+                label="Numer domu / mieszkania"
+                id="suite"
+                placeholder="10A / 2"
+                value={address.suite}
+                onChange={(e) => setAddress({ ...address, suite: e.target.value })}
+              />
+              <FormInput
+                label="Kod pocztowy"
+                id="zipCode"
+                placeholder="00-001"
+                value={address.zipCode}
+                onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
+              />
+              <FormInput
+                label="Miasto"
+                id="city"
+                placeholder="Radomsko"
+                value={address.city}
+                onChange={(e) => setAddress({ ...address, city: e.target.value })}
+              />
             </div>
           </div>
 

@@ -72,7 +72,11 @@ function Profile() {
         <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-8 lg:gap-10">
           <div className="w-full md:w-auto md:min-w-[260px] lg:min-w-[300px] flex flex-col gap-6 md:gap-8 mb-6 md:mb-0">
             <div className="flex items-center gap-4 p-2 md:p-0">
-              <UserAvatar user={{ name: imie, image: null }} className="h-14 w-14 sm:h-16 sm:w-16" />
+              <UserAvatar
+                user={{ name: imie, image: null }}
+                className="h-14 w-14 sm:h-16 sm:w-16"
+                fallbackClassName="text-2xl"
+              />
               <div className="flex flex-col min-w-0">
                 <span className="text-sm text-shadow-xs">Cześć,</span>
                 <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">{imie}</span>

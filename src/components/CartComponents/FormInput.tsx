@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import clsx from "clsx";
 
 interface FormInputProps {
   label: string;
@@ -9,6 +10,7 @@ interface FormInputProps {
   required?: boolean;
   className?: string;
   value?: string;
+  disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -20,6 +22,7 @@ export default function FormInput({
   required = false,
   className = "",
   value,
+  disabled = false,
   onChange
 }: FormInputProps) {
   return (
@@ -34,8 +37,12 @@ export default function FormInput({
         placeholder={placeholder}
         required={required}
         value={value}
+        disabled={disabled}
         onChange={onChange}
-        className="border border-stone-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
+        className={clsx(
+          disabled && "bg-stone-100 cursor-not-allowed",
+          "border border-stone-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
+        )}
       />
     </div>
   );

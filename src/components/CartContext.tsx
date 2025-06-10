@@ -170,7 +170,7 @@ export const CartProvider = ({
   );
 };
 
-function deepEqual(obj1: { [x: string]: any } | null, obj2: { [x: string]: any } | null) {
+export function deepEqual(obj1: { [x: string]: any } | null, obj2: { [x: string]: any } | null) {
   if (obj1 === obj2) {
     return true;
   }
