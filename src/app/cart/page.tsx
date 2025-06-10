@@ -55,6 +55,13 @@ function Cart() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   // const [newsletterAccepted, setNewsletterAccepted] = useState(false); // Dla drugiego checkboxa, jeśli chcesz śledzić jego stan
 
+  const handlePurchase = (
+    cart: (Pizza | Composition)[],
+    totalPrice: number,
+    deliveryPrice: number,
+    clear: () => void
+  ) => {};
+
   return (
     <>
       <div className="bg-red-700 text-white text-center py-8 sm:py-10 px-4 sm:px-6 shadow-md">
@@ -179,11 +186,7 @@ function Cart() {
                   <h2 className="text-xl sm:text-2xl font-bold text-red-700 tracking-wide mb-6 text-center">
                     Twoje zamówienie
                   </h2>
-                  <Summary
-                    isDelivery={selectedDeliveryMethod == "delivery"}
-                    // onRemoveItem={handleRemoveItemFromCart}
-                    // onUpdateQuantity={handleUpdateItemQuantity}
-                  />
+                  <Summary isDelivery={selectedDeliveryMethod == "delivery"} handlePurchase={handlePurchase} />
                 </>
               ) : (
                 <div className="h-50 w-full flex flex-col gap-2 justify-center items-center">

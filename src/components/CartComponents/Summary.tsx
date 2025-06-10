@@ -11,14 +11,15 @@ import { useEffect, useState } from "react";
 
 interface SummaryProps {
   isDelivery: boolean;
+  handlePurchase: (cart: (Pizza | Composition)[], totalPrice: number, deliveryPrice: number, clear: () => void) => void;
 }
 
 const formatPrice = (price: number) => {
   return price.toFixed(2).replace(".", ",") + " zł";
 };
 
-export default function Summary({ isDelivery }: SummaryProps) {
-  const { cart, totalPrice, deliveryIncluded, remove, changeAmount } = useCartState();
+export default function Summary({ isDelivery, handlePurchase }: SummaryProps) {
+  const { cart, totalPrice, deliveryIncluded, remove, changeAmount, clear } = useCartState();
   // const { deliveryCost, total, deliveryInfo } = summaryData;
   const [deliveryInfo, setDeliveryInfo] = useState<string>("");
   const [deliveryCost, setDeliveryCost] = useState(0);
@@ -193,7 +194,7 @@ export default function Summary({ isDelivery }: SummaryProps) {
           size="lg"
           className="w-full bg-red-600 hover:bg-red-700 text-white text-base py-3 shadow-lg hover:shadow-xl active:shadow-md transition-all duration-150 rounded-lg"
           disabled={total === 0}
-          onClick={() => toast.info("Przechodzenie do płatności...")}
+          onClick={() => handlePurchase(cart, totalPrice, total - totalPrice, clear)}
         >
           Zamów i zapłać
         </Button>
