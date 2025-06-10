@@ -75,12 +75,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({
       status: "OK",
-      address: {
-        street: address.street,
-        suite: address.suite,
-        zipCode: address.zipcode,
-        city: address.city
-      }
+      address
     });
   } catch (error) {
     console.error("Error fetching address:", error);

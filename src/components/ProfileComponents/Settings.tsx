@@ -224,6 +224,104 @@ export default function Settings() {
       });
   }, [debouncedAddress]);
 
+  const [isCompanyLoading, setIsCompanyLoading] = React.useState(true);
+  const [companyData, setCompanyData] = React.useState({
+    nip: "",
+    name: "",
+    street: "",
+    suite: "",
+    zipcode: "",
+    city: ""
+  });
+  const [oldCompanyData, setOldCompanyData] = React.useState({
+    nip: "",
+    name: "",
+    street: "",
+    suite: "",
+    zipcode: "",
+    city: ""
+  });
+  React.useEffect(() => {
+    fetch("/api/profile/company")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK" && data.company) {
+          if (data.company) {
+            setCompanyData({
+              nip: data.company.nip || "",
+              name: data.company.name || "",
+              street: data.company.street || "",
+              suite: data.company.suite || "",
+              zipcode: data.company.zipcode || "",
+              city: data.company.city || ""
+            });
+            setOldCompanyData({
+              nip: data.company.nip || "",
+              name: data.company.name || "",
+              street: data.company.street || "",
+              suite: data.company.suite || "",
+              zipcode: data.company.zipcode || "",
+              city: data.company.city || ""
+            });
+            setCompany(true);
+          } else {
+            setCompany(false);
+          }
+          setIsCompanyLoading(false);
+          console.log("Pobrano dane firmy:", data.company);
+        } else {
+          toast.error("Wystąpił błąd podczas pobierania danych firmy.");
+        }
+      });
+  }, []);
+  const [debouncedCompany] = useDebounce(companyData, 2500);
+  React.useEffect(() => {
+    if (isPending || !session || isCompanyLoading || deepEqual(oldCompanyData, companyData)) return;
+
+    console.log("Zapisuję dane firmy:", debouncedCompany);
+
+    const schema = z
+      .object({
+        nip: z.string().regex(/^\d{10}$/, "NIP musi mieć 10 cyfr"),
+        name: z.string().min(1, "Nazwa firmy jest wymagana"),
+        street: z.string(),
+        suite: z.string(),
+        zipcode: z.union([z.string().regex(/^\d{2}-\d{3}$/, "Kod pocztowy musi być w formacie XX-XXX"), z.literal("")]),
+        city: z.string()
+      })
+      .safeParse(debouncedCompany);
+
+    if (!schema.success) {
+      toast.error(
+        <ul>
+          {schema.error.errors.map((e) => (
+            <li key={e.path.join(".")}>{e.message}</li>
+          ))}
+        </ul>
+      );
+      return;
+    }
+
+    fetch("/api/profile/company", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ company: debouncedCompany })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setOldCompanyData(debouncedCompany);
+          toast.success("Dane firmy zostały zaktualizowane.");
+        } else {
+          toast.error("Wystąpił błąd podczas aktualizacji danych firmy.");
+        }
+      })
+      .catch(() => {
+        toast.error("Wystąpił błąd podczas aktualizacji danych firmy.");
+      });
+  }, [debouncedCompany]);
   return (
     <div className="p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="flex items-center gap-2 mb-4">
@@ -321,12 +419,48 @@ export default function Settings() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
               {company ? (
                 <>
-                  <FormInput label="NIP" id="nip" placeholder="1234567890" />
-                  <FormInput label="Nazwa firmy" id="company" placeholder="Januszex sp. z o.o." />
-                  <FormInput label="Ulica" id="street" placeholder="Malinowa" />
-                  <FormInput label="Numer domu / lokalu" id="houseNumber" placeholder="10A / 2" />
-                  <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" />
-                  <FormInput label="Miasto" id="city" placeholder="Radomsko" />
+                  <FormInput
+                    label="NIP"
+                    id="nip"
+                    placeholder="1234567890"
+                    value={companyData.nip}
+                    onChange={(e) => setCompanyData({ ...companyData, nip: e.target.value })}
+                  />
+                  <FormInput
+                    label="Nazwa firmy"
+                    id="company"
+                    placeholder="Januszex sp. z o.o."
+                    value={companyData.name}
+                    onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
+                  />
+                  <FormInput
+                    label="Ulica"
+                    id="street"
+                    placeholder="Malinowa"
+                    value={companyData.street}
+                    onChange={(e) => setCompanyData({ ...companyData, street: e.target.value })}
+                  />
+                  <FormInput
+                    label="Numer domu / lokalu"
+                    id="suite"
+                    placeholder="10A / 2"
+                    value={companyData.suite}
+                    onChange={(e) => setCompanyData({ ...companyData, suite: e.target.value })}
+                  />
+                  <FormInput
+                    label="Kod pocztowy"
+                    id="zipcode"
+                    placeholder="00-001"
+                    value={companyData.zipcode}
+                    onChange={(e) => setCompanyData({ ...companyData, zipcode: e.target.value })}
+                  />
+                  <FormInput
+                    label="Miasto"
+                    id="city"
+                    placeholder="Radomsko"
+                    value={companyData.city}
+                    onChange={(e) => setCompanyData({ ...companyData, city: e.target.value })}
+                  />
                   <div className="sm:col-span-2">
                     <Button
                       onClick={() => setCompany(false)}
