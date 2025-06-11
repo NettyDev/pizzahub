@@ -3,24 +3,25 @@ import { Label } from "@/components/ui/label";
 import { RadioGroupItem, RadioGroup } from "@radix-ui/react-radio-group";
 import { Banknote, CircleCheck, CircleDollarSign, CreditCard, Nfc } from "lucide-react";
 
-const pay_options = [
-  { value: "payu", icon: Nfc, label: "PayU", description: "Szybka płatność online" },
-  { value: "card", icon: CreditCard, label: "Karta kredytowa", description: "Płatność kartą kredytową" },
-  { value: "cash", icon: Banknote, label: "Gotówka", description: "Płatność przy odbiorze" }
-];
-
 interface PaymentMethodProps {
   onChange?: (value: string) => void;
+  selectedValue?: string;
+  payOptions: {
+    value: string;
+    icon: React.ElementType;
+    label: string;
+    description: string;
+  }[];
 }
 
-export default function PaymentMethod({ onChange }: PaymentMethodProps) {
+export default function PaymentMethod({ onChange, selectedValue, payOptions }: PaymentMethodProps) {
   return (
     <RadioGroup
-      defaultValue={pay_options[0].value}
+      value={selectedValue}
       className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
       onValueChange={onChange}
     >
-      {pay_options.map((option) => (
+      {payOptions.map((option) => (
         <RadioGroupItem
           key={option.value}
           value={option.value}

@@ -22,9 +22,16 @@ export interface ContactFormData {
 
 export interface DeliveryFormData {
   street: string;
-  houseNumber: string;
-  zipCode: string;
+  suite: string;
+  zipcode: string;
   city: string;
-  floor?: string;
-  company?: string;
+}
+
+export interface CompanyFormData {
+  nip: string;
+  name: string;
+  street: string;
+  suite: string;
+  zipcode: string;
+  city: string;
 }

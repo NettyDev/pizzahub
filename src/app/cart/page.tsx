@@ -7,15 +7,25 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import PaymentMethod from "@/components/CartComponents/Payment";
-import DeliveryMethod from "@/components/CartComponents/Delivery";
+import DeliveryMethod, { available_hours } from "@/components/CartComponents/Delivery";
 import Summary from "@/components/CartComponents/Summary";
 import DeliveryForm from "@/components/CartComponents/DeliveryForm";
 import ContactForm from "@/components/CartComponents/ContactForm";
 import FormInput from "@/components/CartComponents/FormInput";
-import type { CartSummaryData, CartItem, ContactFormData, DeliveryFormData } from "@/components/CartComponents/types";
-import { Plus, ShoppingBag } from "lucide-react";
+import { Banknote, CreditCard, Nfc, Plus, ShoppingBag } from "lucide-react";
 import { Composition, Pizza, useCartState } from "@/components/CartContext";
 import SpinnerCircle4 from "@/components/ui/spinner";
+import { toast } from "sonner";
+
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import clsx from "clsx";
+import { redirect } from "next/navigation";
+
+const pay_options = [
+  { value: "payu", icon: Nfc, label: "PayU", description: "Szybka płatność online" },
+  { value: "card", icon: CreditCard, label: "Karta kredytowa", description: "Płatność kartą kredytową" },
+  { value: "cash", icon: Banknote, label: "Gotówka", description: "Płatność przy odbiorze" }
+];
 
 const delivery_options_cart = [
   { value: "delivery", label: "Dostawa" },
@@ -40,42 +50,168 @@ export default function CartPage() {
   );
 }
 
+interface ContactFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+interface DeliveryFormData {
+  street: string;
+  suite: string;
+  zipcode: string;
+  city: string;
+}
+interface CompanyFormData {
+  nip: string;
+  name: string;
+  street: string;
+  suite: string;
+  zipcode: string;
+  city: string;
+}
+
+export interface FormValues {
+  paymentMethod: string;
+  deliveryMethod: string;
+  deliveryTime: string;
+  deliveryDate: Date;
+  deliveryHour: string;
+  termsAccepted: boolean;
+  newsLetterAccepted: boolean;
+  invoice: boolean;
+  contact: ContactFormData;
+  delivery: DeliveryFormData;
+  company: CompanyFormData;
+  comment: string;
+}
+
 function Cart() {
   const { isLocalStorageUpdated } = useCartState();
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(delivery_options_cart[0].value);
-  const [selectedDeliveryTime, setSelectedDeliveryTime] = useState(delivery_time_options_cart[0].value);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedHour, setSelectedHour] = useState<string | undefined>(undefined);
+  const methods = useForm<FormValues>({
+    defaultValues: {
+      paymentMethod: pay_options[0].value,
+      deliveryMethod: delivery_options_cart[0].value,
+      deliveryTime: delivery_time_options_cart[0].value,
+      deliveryDate: new Date(),
+      deliveryHour: available_hours[0],
+      termsAccepted: false,
+      newsLetterAccepted: false,
+      invoice: false,
+      contact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: ""
+      },
+      delivery: {
+        street: "",
+        suite: "",
+        zipcode: "",
+        city: ""
+      },
+      company: {
+        nip: "",
+        name: "",
+        street: "",
+        suite: "",
+        zipcode: "",
+        city: ""
+      },
+      comment: ""
+    }
+  });
 
-  const [showInvoiceFields, setShowInvoiceFields] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+    reset
+  } = methods;
 
-  const [contactData, setContactData] = useState<Partial<ContactFormData>>({});
-  const [deliveryAddressData, setDeliveryAddressData] = useState<Partial<DeliveryFormData>>({});
-
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  // const [newsletterAccepted, setNewsletterAccepted] = useState(false); // Dla drugiego checkboxa, jeśli chcesz śledzić jego stan
+  const [isInvoice, selectedDeliveryMethod] = watch(["invoice", "deliveryMethod"]);
 
   const handlePurchase = (
     cart: (Pizza | Composition)[],
     totalPrice: number,
     deliveryPrice: number,
     clear: () => void
-  ) => {
-    const summmary = {
-      cart,
-      totalPrice,
-      deliveryPrice,
-      selectedDeliveryMethod,
-      selectedDeliveryTime,
-      selectedDate,
-      selectedHour
-    };
+  ) =>
+    handleSubmit(
+      (value) => {
+        const summmary = {
+          ...value,
+          cart,
+          totalPrice,
+          deliveryPrice
+        };
+        console.log("Zamówienie do przetworzenia:", summmary);
 
-    console.log("Zamówienie do przetworzenia:", summmary);
-  };
+        fetch("/api/order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(summmary)
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Błąd podczas składania zamówienia");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Zamówienie złożone pomyślnie:", data);
+            toast.success("Zamówienie zostało złożone pomyślnie! Dziękujemy za zakupy.");
+            reset();
+            clear();
+          })
+          .catch((error) => {
+            console.error("Błąd podczas składania zamówienia:", error);
+            toast.error("Wystąpił błąd podczas składania zamówienia. Spróbuj ponownie później.");
+          });
+      },
+      (errors) => {
+        console.log("Form errors:", errors);
+        const formatKey = (key: string) => {
+          switch (key) {
+            case "contact":
+              return "Dane kontaktowe";
+            case "delivery":
+              return "Dane dostawy";
+            case "company":
+              return "Dane firmy";
+            default:
+              return key;
+          }
+        };
+        if (Object.keys(errors).length > 0) {
+          toast.error(
+            <ul>
+              {Object.values(errors).map((error, idx) => {
+                if (!("message" in error)) {
+                  return (
+                    <li>
+                      <p>{formatKey(Object.keys(errors)[idx])}</p>
+                      <ul className="pl-4 list-disc">
+                        {Object.values(error).map((subError) => (
+                          <li key={subError.message}>{subError.message}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  );
+                } else return <li>{error.message}</li>;
+              })}
+            </ul>
+          );
+        }
+      }
+    )();
 
   return (
-    <>
+    <FormProvider {...methods}>
       <div className="bg-red-700 text-white text-center py-8 sm:py-10 px-4 sm:px-6 shadow-md">
         <h2 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight">Twój koszyk</h2>
       </div>
@@ -84,21 +220,18 @@ function Cart() {
           <div className="w-full lg:w-[60%] xl:w-2/3 flex flex-col gap-8">
             <section className="bg-white rounded-lg shadow-lg p-6 sm:p-8 border border-stone-200">
               <h2 className="text-xl sm:text-2xl mb-6 text-shadow-xs">Płatność</h2>
-              <PaymentMethod onChange={console.log} />
+              <Controller
+                name="paymentMethod"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <PaymentMethod payOptions={pay_options} onChange={onChange} selectedValue={value} />
+                )}
+              />
             </section>
 
             <section className="bg-white rounded-lg shadow-lg p-6 sm:p-8 border border-stone-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <DeliveryMethod
-                  selectedDeliveryMethod={selectedDeliveryMethod}
-                  setSelectedDeliveryMethod={setSelectedDeliveryMethod}
-                  selectedDeliveryTime={selectedDeliveryTime}
-                  setSelectedDeliveryTime={setSelectedDeliveryTime}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  selectedHour={selectedHour}
-                  setSelectedHour={setSelectedHour}
-                />
+                <DeliveryMethod />
               </div>
             </section>
 
@@ -109,42 +242,132 @@ function Cart() {
 
               <div className="mt-8 pt-6 border-t border-stone-200">
                 <h3 className="text-lg mb-4 text-shadow-xs">Dokument sprzedaży</h3>
-                <RadioGroup
-                  defaultValue="paragon"
-                  onValueChange={(value) => setShowInvoiceFields(value === "faktura")}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="paragon"
-                      id="paragon"
-                      className="[&_svg]:fill-white h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
-                    />
-                    <Label htmlFor="paragon" className="text-sm cursor-pointer">
-                      Paragon
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="faktura"
-                      id="faktura"
-                      className="[&_svg]:fill-white h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
-                    />
-                    <Label htmlFor="faktura" className="text-sm cursor-pointer">
-                      Faktura VAT
-                    </Label>
-                  </div>
-                </RadioGroup>
+                <Controller
+                  name="invoice"
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <RadioGroup
+                      defaultValue="paragon"
+                      onValueChange={(value) => onChange(value === "faktura")}
+                      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="paragon"
+                          id="paragon"
+                          className="[&_svg]:fill-white h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+                        />
+                        <Label htmlFor="paragon" className="text-sm cursor-pointer">
+                          Paragon
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="faktura"
+                          id="faktura"
+                          className="[&_svg]:fill-white h-4 w-4 border-stone-400 rounded-sm text-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+                        />
+                        <Label htmlFor="faktura" className="text-sm cursor-pointer">
+                          Faktura VAT
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
               </div>
 
-              {showInvoiceFields && (
+              {isInvoice && (
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-                  <FormInput label="NIP" id="nip" placeholder="1234567890" required />
-                  <FormInput label="Nazwa firmy" id="company" placeholder="Januszex sp. z o.o." required />
-                  <FormInput label="Ulica" id="street" placeholder="Malinowa" required />
-                  <FormInput label="Numer domu / lokalu" id="houseNumber" placeholder="10A / 2" required />
-                  <FormInput label="Kod pocztowy" id="zipCode" placeholder="00-001" required />
-                  <FormInput label="Miasto" id="city" placeholder="Radomsko" required />
+                  <Controller
+                    name="company.nip"
+                    control={control}
+                    rules={{ required: "NIP jest wymagany" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.nip}
+                        label="NIP"
+                        id="nip"
+                        placeholder="1234567890"
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="company.name"
+                    control={control}
+                    rules={{ required: "Nazwa firmy jest wymagana" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.name}
+                        label="Nazwa firmy"
+                        id="company"
+                        placeholder="Januszex sp. z o.o."
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="company.street"
+                    control={control}
+                    rules={{ required: "Ulica jest wymagana" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.street}
+                        label="Ulica"
+                        id="street"
+                        placeholder="Malinowa"
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="company.suite"
+                    control={control}
+                    rules={{ required: "Numer lokalu jest wymagany" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.suite}
+                        label="Numer domu / lokalu"
+                        id="suite"
+                        placeholder="10A / 2"
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="company.zipcode"
+                    control={control}
+                    rules={{ required: "Kod pocztowy jest wymagany" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.zipcode}
+                        label="Kod pocztowy"
+                        id="zipcode"
+                        placeholder="00-001"
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="company.city"
+                    control={control}
+                    rules={{ required: "Miasto jest wymagane" }}
+                    render={({ field }) => (
+                      <FormInput
+                        error={!!errors.company?.city}
+                        label="Miasto"
+                        id="city"
+                        placeholder="Radomsko"
+                        required
+                        {...field}
+                      />
+                    )}
+                  />
                 </div>
               )}
               <div className="mt-8 pt-6 border-t border-stone-200">
@@ -158,6 +381,7 @@ function Cart() {
                       <Textarea
                         placeholder="Twoje uwagi dotyczące zamówienia, np. informacje dla dostawcy, preferencje..."
                         className="mt-2 border-stone-300 focus:ring-red-500 focus:border-red-500 min-h-[100px]"
+                        {...register("comment")}
                       />
                     </AccordionContent>
                   </AccordionItem>
@@ -166,23 +390,44 @@ function Cart() {
 
               <div className="mt-8 pt-6 border-t border-stone-200 space-y-5">
                 <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="terms"
-                    checked={termsAccepted}
-                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                    className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                  <Controller
+                    name="termsAccepted"
+                    control={control}
+                    rules={{ required: "Musisz zaakceptować regulamin" }}
+                    render={({ field: { value, onChange } }) => (
+                      <Checkbox
+                        id="terms"
+                        className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                        checked={value}
+                        onCheckedChange={onChange}
+                      />
+                    )}
                   />
-                  <Label htmlFor="terms" className="text-xs sm:text-sm leading-snug cursor-pointer">
+
+                  <Label
+                    htmlFor="terms"
+                    className={clsx(
+                      "text-xs sm:text-sm leading-snug cursor-pointer",
+                      errors.termsAccepted && "text-red-600"
+                    )}
+                  >
                     Akceptuję postanowienia Regulaminu i Polityki Prywatności (wymagane)
                   </Label>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="terms2"
-                    // checked={newsletterAccepted}
-                    // onCheckedChange={(checked) => setNewsletterAccepted(checked as boolean)}
-                    className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                  <Controller
+                    name="newsLetterAccepted"
+                    control={control}
+                    render={({ field: { value, onChange } }) => (
+                      <Checkbox
+                        id="terms2"
+                        checked={value}
+                        onCheckedChange={onChange}
+                        className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                      />
+                    )}
                   />
+
                   <Label htmlFor="terms2" className="text-xs sm:text-sm leading-snug cursor-pointer">
                     Chcę otrzymywać informacje o promocjach i nowościach na email (opcjonalne)
                   </Label>
@@ -212,6 +457,6 @@ function Cart() {
           </div>
         </div>
       </div>
-    </>
+    </FormProvider>
   );
 }

@@ -11,6 +11,7 @@ interface FormInputProps {
   className?: string;
   value?: string;
   disabled?: boolean;
+  error?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -23,6 +24,7 @@ export default function FormInput({
   className = "",
   value,
   disabled = false,
+  error = false,
   onChange
 }: FormInputProps) {
   return (
@@ -41,7 +43,8 @@ export default function FormInput({
         onChange={onChange}
         className={clsx(
           disabled && "bg-stone-100 cursor-not-allowed",
-          "border border-stone-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
+          error ? "border-2 border-red-500" : "border-stone-300",
+          "border  rounded-md p-2.5 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
         )}
       />
     </div>
