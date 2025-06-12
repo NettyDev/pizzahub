@@ -20,7 +20,7 @@ interface Pizza {
   id: number;
   name: string;
   image: string;
-  orderCount?: number;
+  ordersCount?: number;
 }
 
 // const topPizzasData: Pizza[] = [
