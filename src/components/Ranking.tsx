@@ -119,12 +119,34 @@ export default function Ranking() {
     fetch("/api/top")
       .then((res) => res.json())
       .then((data) => {
+        if ("message" in data) {
+          console.error("Error fetching pizza data:", data.message);
+          return;
+        }
         if (data.length === 1) {
           setPizzaData([{}, ...data, {}]);
         } else if (data.length === 2) {
           setPizzaData([...data, {}]);
+        } else if (data.length == 0) {
+          setPizzaData([
+            {
+              id: 0,
+              name: "",
+              image: ""
+            },
+            {
+              id: 0,
+              name: "",
+              image: ""
+            },
+            {
+              id: 0,
+              name: "",
+              image: ""
+            }
+          ]);
         } else {
-          setPizzaData(data);
+          setPizzaData([data[1], data[0], data[2]]);
         }
       })
       .catch((error) => {
