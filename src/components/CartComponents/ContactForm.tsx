@@ -15,30 +15,14 @@ export default function ContactForm() {
           name="contact.firstName"
           control={control}
           rules={{ required: "Imię jest wymagane" }}
-          render={({ field }) => (
-            <FormInput
-              error={!!errors.contact?.firstName}
-              label="Imię"
-              id="firstName"
-              placeholder="Tomasz"
-              required
-              {...field}
-            />
-          )}
+          render={({ field }) => <FormInput label="Imię" id="firstName" placeholder="Tomasz" required {...field} />}
         />
         <Controller
           name="contact.lastName"
           control={control}
           rules={{ required: "Nazwisko jest wymagane" }}
           render={({ field }) => (
-            <FormInput
-              error={!!errors.contact?.lastName}
-              label="Nazwisko"
-              id="lastName"
-              placeholder="Kowalski"
-              required
-              {...field}
-            />
+            <FormInput label="Nazwisko" id="lastName" placeholder="Kowalski" required {...field} />
           )}
         />
         <Controller
@@ -46,15 +30,7 @@ export default function ContactForm() {
           control={control}
           rules={{ required: "Telefon jest wymagany" }}
           render={({ field }) => (
-            <FormInput
-              error={!!errors.contact?.phone}
-              label="Telefon"
-              id="phone"
-              placeholder="123-456-789"
-              type="tel"
-              required
-              {...field}
-            />
+            <FormInput label="Telefon" id="phone" placeholder="123-456-789" type="tel" required {...field} />
           )}
         />
         <Controller
@@ -62,15 +38,7 @@ export default function ContactForm() {
           control={control}
           rules={{ required: "Email jest wymagany" }}
           render={({ field }) => (
-            <FormInput
-              error={!!errors.contact?.email}
-              label="E-mail"
-              id="email"
-              placeholder="mail@example.com"
-              type="email"
-              required
-              {...field}
-            />
+            <FormInput label="E-mail" id="email" placeholder="mail@example.com" type="email" required {...field} />
           )}
         />
       </div>

@@ -230,20 +230,21 @@ model CompositionOrder {
 model Order {
   id Int @id @default(autoincrement())
 
-  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user         User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId       String?
   price        Float
   payment      String
   delivery     String
-  status       String
+  status       String // in_progress, completed, cancelled
   comment      String
   orderDate    DateTime
-  deliveryDate DateTime
+  deliveryDate DateTime?
+  deliveryHour String?
 
   orderContact   OrderContact  @relation(fields: [orderContactId], references: [id], onDelete: Cascade)
   orderContactId Int           @unique
-  orderAddress   OrderAddress  @relation(fields: [orderAddressId], references: [id], onDelete: Cascade)
-  orderAddressId Int           @unique
+  orderAddress   OrderAddress? @relation(fields: [orderAddressId], references: [id], onDelete: Cascade)
+  orderAddressId Int?          @unique
   orderCompany   OrderCompany? @relation(fields: [orderCompanyId], references: [id], onDelete: Cascade)
   orderCompanyId Int?          @unique
 

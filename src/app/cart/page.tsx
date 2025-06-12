@@ -19,7 +19,8 @@ import { toast } from "sonner";
 
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import clsx from "clsx";
-import { redirect } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const pay_options = [
   { value: "payu", icon: Nfc, label: "PayU", description: "Szybka płatność online" },
@@ -86,9 +87,76 @@ export interface FormValues {
   comment: string;
 }
 
+const FormSchema = z
+  .object({
+    paymentMethod: z.string().min(1, "Wybierz metodę płatności"),
+    deliveryMethod: z.string().min(1, "Wybierz metodę dostawy"),
+    deliveryTime: z.string().min(1, "Wybierz czas dostawy"),
+    deliveryDate: z.date(),
+    deliveryHour: z.string().min(1, "Wybierz godzinę dostawy"),
+    termsAccepted: z.boolean().refine((val) => val, {
+      message: "Musisz zaakceptować regulamin"
+    }),
+    newsLetterAccepted: z.boolean(),
+    invoice: z.boolean(),
+    contact: z.object({
+      firstName: z.string().min(1, "Imię jest wymagane"),
+      lastName: z.string().min(1, "Nazwisko jest wymagane"),
+      email: z.string().email("Nieprawidłowy adres email").min(1, "Email jest wymagany"),
+      phone: z
+        .string()
+        .min(1, "Numer telefonu jest wymagany")
+        .regex(/^(\+48\s?)?\d{3}[\s-]?\d{3}[\s-]?\d{3}$/, "Telefon musi być w poprawnym formacie polskim")
+    }),
+    delivery: z.object({
+      street: z.string().optional(),
+      suite: z.string().optional(),
+      zipcode: z.union([z.literal(""), z.string().regex(/^\d{2}-\d{3}$/, "Nieprawidłowy format kodu pocztowego")]),
+      city: z.string().optional()
+    }),
+    company: z.object({
+      nip: z.string().optional(),
+      name: z.string().optional(),
+      street: z.string().optional(),
+      suite: z.string().optional(),
+      zipcode: z.union([z.literal(""), z.string().regex(/^\d{2}-\d{3}$/, "Nieprawidłowy format kodu pocztowego")]),
+      city: z.string().optional()
+    }),
+    comment: z.string().optional()
+  })
+  .refine(
+    (data) => {
+      if (data.deliveryMethod === "delivery") {
+        return data.delivery.street && data.delivery.suite && data.delivery.zipcode && data.delivery.city;
+      }
+      return true;
+    },
+    {
+      message: "Wypełnij wszystkie wymagane pola dostawy"
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.invoice) {
+        return (
+          data.company.nip &&
+          data.company.name &&
+          data.company.street &&
+          data.company.suite &&
+          data.company.zipcode &&
+          data.company.city
+        );
+      }
+      return true;
+    },
+    {
+      message: "Wypełnij wszystkie wymagane pola firmy"
+    }
+  );
 function Cart() {
   const { isLocalStorageUpdated } = useCartState();
-  const methods = useForm<FormValues>({
+  const methods = useForm({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       paymentMethod: pay_options[0].value,
       deliveryMethod: delivery_options_cart[0].value,
@@ -283,14 +351,7 @@ function Cart() {
                     control={control}
                     rules={{ required: "NIP jest wymagany" }}
                     render={({ field }) => (
-                      <FormInput
-                        error={!!errors.company?.nip}
-                        label="NIP"
-                        id="nip"
-                        placeholder="1234567890"
-                        required
-                        {...field}
-                      />
+                      <FormInput label="NIP" id="nip" placeholder="1234567890" required {...field} />
                     )}
                   />
                   <Controller
@@ -299,7 +360,6 @@ function Cart() {
                     rules={{ required: "Nazwa firmy jest wymagana" }}
                     render={({ field }) => (
                       <FormInput
-                        error={!!errors.company?.name}
                         label="Nazwa firmy"
                         id="company"
                         placeholder="Januszex sp. z o.o."
@@ -313,14 +373,7 @@ function Cart() {
                     control={control}
                     rules={{ required: "Ulica jest wymagana" }}
                     render={({ field }) => (
-                      <FormInput
-                        error={!!errors.company?.street}
-                        label="Ulica"
-                        id="street"
-                        placeholder="Malinowa"
-                        required
-                        {...field}
-                      />
+                      <FormInput label="Ulica" id="street" placeholder="Malinowa" required {...field} />
                     )}
                   />
                   <Controller
@@ -328,14 +381,7 @@ function Cart() {
                     control={control}
                     rules={{ required: "Numer lokalu jest wymagany" }}
                     render={({ field }) => (
-                      <FormInput
-                        error={!!errors.company?.suite}
-                        label="Numer domu / lokalu"
-                        id="suite"
-                        placeholder="10A / 2"
-                        required
-                        {...field}
-                      />
+                      <FormInput label="Numer domu / lokalu" id="suite" placeholder="10A / 2" required {...field} />
                     )}
                   />
                   <Controller
@@ -343,14 +389,7 @@ function Cart() {
                     control={control}
                     rules={{ required: "Kod pocztowy jest wymagany" }}
                     render={({ field }) => (
-                      <FormInput
-                        error={!!errors.company?.zipcode}
-                        label="Kod pocztowy"
-                        id="zipcode"
-                        placeholder="00-001"
-                        required
-                        {...field}
-                      />
+                      <FormInput label="Kod pocztowy" id="zipcode" placeholder="00-001" required {...field} />
                     )}
                   />
                   <Controller
@@ -358,14 +397,7 @@ function Cart() {
                     control={control}
                     rules={{ required: "Miasto jest wymagane" }}
                     render={({ field }) => (
-                      <FormInput
-                        error={!!errors.company?.city}
-                        label="Miasto"
-                        id="city"
-                        placeholder="Radomsko"
-                        required
-                        {...field}
-                      />
+                      <FormInput label="Miasto" id="city" placeholder="Radomsko" required {...field} />
                     )}
                   />
                 </div>

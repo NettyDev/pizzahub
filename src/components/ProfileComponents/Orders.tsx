@@ -1,74 +1,80 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Info, CheckCircleIcon, TruckIcon, XCircleIcon, ClockIcon, ShoppingBag, Star } from 'lucide-react';
-import Link from 'next/link';
-import clsx from 'clsx';
-import StarRating from './StarRating';
+import { X, Info, CheckCircleIcon, TruckIcon, XCircleIcon, ClockIcon, ShoppingBag, Star } from "lucide-react";
+import Link from "next/link";
+import clsx from "clsx";
+import StarRating from "./StarRating";
 
-
-const sampleOrders = [
-    {
-    id: "#1",
-    date: "2025-01-16",
-    items: [
-      { name: "Pizza Margherita", quantity: 1, price: 25.00 },
-    ],
-    totalPrice: 25.00,
-    status: "Dostarczone",
-    userRating: 0,
-  },
-  {
-    id: "#666",
-    date: "2025-02-14",
-    items: [
-      { name: "Hawajska Pokusa", quantity: 1, price: 30.00 },
-      { name: "Pizza Margherita", quantity: 1, price: 25.00 },
-    ],
-    totalPrice: 55.00,
-    status: "W trakcie realizacji",
-    userRating: 0,
-  },
-  {
-    id: "#11223",
-    date: "2025-12-01",
-    items: [
-      { name: "Pepperoni", quantity: 1, price: 22.00 },
-    ],
-    totalPrice: 22.00,
-    status: "Anulowane",
-    userRating: 0,
-  },
-
-];
+// const sampleOrders = [
+//   {
+//     id: "#1",
+//     date: "2025-01-16",
+//     items: [
+//       {
+//         name: "Pizza Margherita",
+//         quantity: 1,
+//         price: 25.0,
+//         size: "medium",
+//         crust: "thin",
+//         toppings: ["Pieczarki", "Szynka"]
+//       }
+//     ],
+//     totalPrice: 25.0,
+//     status: "Dostarczone",
+//     userRating: 0
+//   },
+//   {
+//     id: "#666",
+//     date: "2025-02-14",
+//     items: [
+//       { name: "Hawajska Pokusa", quantity: 1, price: 30.0 },
+//       { name: "Pizza Margherita", quantity: 1, price: 25.0 }
+//     ],
+//     totalPrice: 55.0,
+//     status: "W trakcie realizacji",
+//     userRating: 0
+//   },
+//   {
+//     id: "#11223",
+//     date: "2025-12-01",
+//     items: [{ name: "Pepperoni", quantity: 1, price: 22.0 }],
+//     totalPrice: 22.0,
+//     status: "Anulowane",
+//     userRating: 0
+//   }
+// ];
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(amount);
+  return new Intl.NumberFormat("pl-PL", { style: "currency", currency: "PLN" }).format(amount);
 };
-
 
 type OrderStatusProps = { status: string };
 
 const OrderStatus = ({ status }: OrderStatusProps) => {
   let iconComponent;
   let textColorClass = "text-stone-700";
-  let bgColorClass = "bg-stone-100"; 
+  let bgColorClass = "bg-stone-100";
+  let statusText = "Brak statusu";
 
   switch (status) {
-    case "Dostarczone":
+    case "completed":
       iconComponent = <CheckCircleIcon className="h-4 w-4" />;
       textColorClass = "text-green-700";
       bgColorClass = "bg-green-100";
+      statusText = "Dostarczone";
       break;
-    case "W trakcie realizacji":
+    case "in_progress":
       iconComponent = <TruckIcon className="h-4 w-4" />;
       textColorClass = "text-blue-700";
       bgColorClass = "bg-blue-100";
+      statusText = "W trakcie realizacji";
       break;
-    case "Anulowane":
+    case "cancelled":
       iconComponent = <XCircleIcon className="h-4 w-4" />;
       textColorClass = "text-red-700";
       bgColorClass = "bg-red-100";
+      statusText = "Anulowane";
       break;
     case "Oczekujące na płatność":
       iconComponent = <ClockIcon className="h-4 w-4" />;
@@ -82,40 +88,57 @@ const OrderStatus = ({ status }: OrderStatusProps) => {
   }
 
   return (
-    <span className={clsx(
+    <span
+      className={clsx(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
         textColorClass,
         bgColorClass
-    )}>
+      )}
+    >
       {iconComponent}
-      <span className="truncate">{status}</span>
+      <span className="truncate">{statusText}</span>
     </span>
   );
 };
 
-
 export default function Orders() {
-  type OrderItem = { name: string; quantity: number; price: number };
+  type OrderItem = {
+    name: string;
+    quantity: number;
+    price: number;
+    size?: string;
+    crust?: string;
+    toppings?: string[];
+  };
   type Order = {
     id: string;
     date: string;
     items: OrderItem[];
-    totalPrice: number;
+    price: number;
     status: string;
     userRating: number;
   };
-  
-  const [orders, setOrders] = React.useState<Order[]>(sampleOrders);
 
-  const handleRatingChange = (orderId: string, rating: number) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId ? { ...order, userRating: rating } : order
-      )
-    );
-    console.log(`Zamówienie ${orderId} ocenione na ${rating} gwiazdek`);
-  };
+  const [orders, setOrders] = React.useState<Order[]>([]);
 
+  useEffect(() => {
+    fetch("/api/order")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setOrders(data.newOrders);
+        } else {
+          console.error("Błąd podczas pobierania zamówień:", data.message);
+        }
+      });
+  }, []);
+
+  // const handleRatingChange = (orderId: string, rating: number) => {
+  //   setOrders((prevOrders) =>
+  //     prevOrders.map((order) => (order.id === orderId ? { ...order, userRating: rating } : order))
+  //   );
+  //   console.log(`Zamówienie ${orderId} ocenione na ${rating} gwiazdek`);
+  // };
 
   if (orders.length === 0) {
     return (
@@ -123,7 +146,8 @@ export default function Orders() {
         <ShoppingBag className="h-20 w-20 mb-6" />
         <h2 className="text-2xl sm:text-3xl font-semibold mb-3">Nie masz jeszcze żadnych zamówień</h2>
         <p className="mb-8 max-w-md">
-          Wygląda na to, że Twoja historia zamówień jest pusta. Zamów swoją ulubioną pizzę i wróć tutaj, aby zobaczyć swoje zamówienia i je ocenić!
+          Wygląda na to, że Twoja historia zamówień jest pusta. Zamów swoją ulubioną pizzę i wróć tutaj, aby zobaczyć
+          swoje zamówienia i je ocenić!
         </p>
         <div>
           <Link href="/menu">
@@ -144,11 +168,11 @@ export default function Orders() {
       <div className="p-2 sm:p-4 md:p-6 lg:p-8">
         <div className="flex items-center mb-4">
           <div className="flex flex-col items-start w-full">
-          <h2 className="text-3xl font-semibold text-shadow-xs">Twoje zamówienia</h2>
-          <p className="text-sm mt-6 text-stone-600">
-          Poniżej znajdziesz historię swoich zamówień. Możesz ocenić każde zamówienie po jego dostarczeniu.
-          Kliknij na zamówienie, aby zobaczyć szczegóły i ocenić produkty.
-        </p>
+            <h2 className="text-3xl font-semibold text-shadow-xs">Twoje zamówienia</h2>
+            <p className="text-sm mt-6 text-stone-600">
+              Poniżej znajdziesz historię swoich zamówień. Możesz ocenić każde zamówienie po jego dostarczeniu. Kliknij
+              na zamówienie, aby zobaczyć szczegóły i ocenić produkty.
+            </p>
           </div>
         </div>
       </div>
@@ -157,22 +181,27 @@ export default function Orders() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-stone-200 flex flex-col hover:shadow-xl transition-shadow duration-300">
+              className="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-stone-200 flex flex-col hover:shadow-xl transition-shadow duration-300"
+            >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4 border-b border-red-700">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wider">Zamówienie</p>
-                  <p className="text-lg font-semibold">{order.id}</p>
+                  <p className="text-lg font-semibold">#{order.id}</p>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:text-right">
                   <p className="text-xs mb-0.5">Data złożenia</p>
                   <p className="text-sm font-medium">
-                    {new Date(order.date).toLocaleDateString('pl-PL', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {new Date(order.date).toLocaleDateString("pl-PL", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric"
+                    })}
                   </p>
                 </div>
               </div>
 
               <div className="flex justify-between items-center mb-5">
-                  <OrderStatus status={order.status} />
+                <OrderStatus status={order.status} />
               </div>
               <div className="mb-5 flex-grow">
                 <h4 className="text-sm font-semibold mb-2.5">Zamówione produkty:</h4>
@@ -181,15 +210,32 @@ export default function Orders() {
                     <li key={index} className="flex justify-between items-start p-2.5 rounded-md">
                       <div className="flex-grow pr-2">
                         <p className="font-medium break-words leading-snug">{item.name}</p>
-                        <p className="text-xs">Ilość: {item.quantity}</p>
+                        <p className="text-xs">
+                          Rozmiar: {item.size == "small" ? "mała" : item.size == "medium" ? "średnia" : "duża"}
+                        </p>
+                        <p className="text-xs">Ciasto: {item.crust == "thin" ? "cienkie" : "grube"}</p>
+                        {item.toppings && item.toppings.length > 0 && (
+                          <>
+                            <p className="text-xs">Dodatki: </p>
+                            <ul className="pl-6 list-disc">
+                              {item.toppings.map((topping, toppingIndex) => (
+                                <li key={toppingIndex} className="text-xs">
+                                  {topping}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        )}
+                        <p className="text-xs">
+                          Ilość:
+                          {item.quantity}
+                        </p>
                       </div>
-                      <p className="font-semibold whitespace-nowrap">
-                        {formatCurrency(item.price * item.quantity)}
-                      </p>
+                      <p className="font-semibold whitespace-nowrap">{formatCurrency(item.price * item.quantity)}</p>
                     </li>
                   ))}
                 </ul>
-                {order.status === "Dostarczone" && (
+                {/* {order.status === "Dostarczone" && (
                   <div className="mt-5">
                     <p className="text-xs mb-1 text-center sm:text-left">Twoja ocena:</p>
                     <StarRating
@@ -199,27 +245,24 @@ export default function Orders() {
                       readonly={order.userRating > 0}
                     />
                   </div>
-                )}
+                )} */}
               </div>
 
               <div className="pt-4 border-t border-red-700 mt-auto">
                 <div className=" sm:flex-row justify-between items-center mb-4 gap-3">
-
                   <div className="text-center sm:text-right">
                     <p className="text-sm font-medium">Łączna kwota:</p>
-                    <p className="text-xl font-bold text-red-600">
-                      {formatCurrency(order.totalPrice)}
-                    </p>
+                    <p className="text-xl font-bold text-red-600">{formatCurrency(order.price)}</p>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                {/* <div className="flex flex-col sm:flex-row gap-3 justify-end">
                   <Button
-                      size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow rounded-md"
+                    size="sm"
+                    className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow rounded-md"
                   >
-                      Zamów ponownie
+                    Zamów ponownie
                   </Button>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
