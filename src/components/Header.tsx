@@ -14,6 +14,7 @@ import {
   LogIn,
   Home as HomeIcon,
   Pizza,
+  Rocket,
   Phone as PhoneIcon,
   User as UserProfileIcon,
   Menu as MenuIcon
@@ -40,6 +41,7 @@ type NavLinkItem = {
 const mainNavLinks: NavLinkItem[] = [
   { href: "/", label: "Strona główna", icon: HomeIcon },
   { href: "/menu", label: "Menu", icon: Pizza },
+  { href: "/composer", label: "Kompozytor", icon: Rocket },
   { href: "/contact", label: "Kontakt", icon: PhoneIcon }
 ];
 
