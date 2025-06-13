@@ -1,16 +1,4 @@
-import {
-  Button,
-  Html,
-  Section,
-  Row,
-  Column,
-  Img,
-  Head,
-  Text,
-  Heading,
-  Tailwind,
-  Hr,
-} from "@react-email/components";
+import { Button, Html, Section, Row, Column, Img, Head, Text, Heading, Tailwind, Hr } from "@react-email/components";
 import Fonts from "./components/Fonts";
 
 interface OrderItem {
@@ -30,9 +18,7 @@ interface OrderConfirmationEmailProps {
   orderUrl: string;
 }
 
-export default function OrderConfirmationEmail(
-  props: OrderConfirmationEmailProps
-) {
+export default function OrderConfirmationEmail(props: OrderConfirmationEmailProps) {
   //   const {
   //     name,
   //     orderId,
@@ -52,19 +38,19 @@ export default function OrderConfirmationEmail(
     total,
     deliveryAddress,
     estimatedDeliveryTime,
-    orderUrl,
+    orderUrl
   }: OrderConfirmationEmailProps = {
     name: "nadusia",
     orderId: "12345-ABCDE",
     orderDate: "16 stycznia 2025, 18:35",
     items: [
       { name: "Miss Klasyki", quantity: 1, price: 30.0 },
-      { name: "Piko Bello", quantity: 1, price: 35.0 },
+      { name: "Piko Bello", quantity: 1, price: 35.0 }
     ],
     total: 75.0,
     deliveryAddress: "ul. Andromedy 12/3, 00-001 Warszawa",
     estimatedDeliveryTime: "30-45 minut",
-    orderUrl: "https://pizzahub.pl/moje-konto/zamowienia/12345-ABCDE",
+    orderUrl: "https://pizzahub.pl/moje-konto/zamowienia/12345-ABCDE"
   };
   return (
     <Html>
@@ -74,28 +60,24 @@ export default function OrderConfirmationEmail(
       </Head>
       <Tailwind>
         <Section className="max-w-xl bg-white">
-          {/* Sekcja z logo */}
           <Row>
             <Column align="center">
               <Img height={100} src="http://localhost:3000/logo.svg" />
             </Column>
           </Row>
 
-          {/* Główna treść maila */}
           <Section className="p-7">
             <Row>
               <Column>
                 <Heading as="h1">Dziękujemy za Twoje zamówienie!</Heading>
                 <Text>Cześć {name},</Text>
                 <Text>
-                  Twoje zamówienie o numerze <strong>{orderId}</strong> z dnia{" "}
-                  {orderDate} zostało przyjęte i jest właśnie przygotowywane.
-                  Poniżej znajdziesz jego szczegóły.
+                  Twoje zamówienie o numerze <strong>{orderId}</strong> z dnia {orderDate} zostało przyjęte i jest
+                  właśnie przygotowywane. Poniżej znajdziesz jego szczegóły.
                 </Text>
               </Column>
             </Row>
 
-            {/* Podsumowanie zamówienia */}
             <Section className="mt-6">
               <Heading as="h2" className="text-lg font-semibold">
                 Podsumowanie zamówienia
@@ -114,20 +96,16 @@ export default function OrderConfirmationEmail(
                 </Row>
               ))}
               <Hr className="my-4 border-gray-300" />
-              {/* Całkowity koszt */}
               <Row>
                 <Column>
                   <Text className="font-bold text-base">Suma</Text>
                 </Column>
                 <Column align="right">
-                  <Text className="font-bold text-base">
-                    {total.toFixed(2)} zł
-                  </Text>
+                  <Text className="font-bold text-base">{total.toFixed(2)} zł</Text>
                 </Column>
               </Row>
             </Section>
 
-            {/* Szczegóły dostawy */}
             <Section className="mt-6">
               <Heading as="h2" className="text-lg font-semibold">
                 Szczegóły dostawy
@@ -144,14 +122,9 @@ export default function OrderConfirmationEmail(
               </Text>
             </Section>
 
-            {/* Przycisk z wezwaniem do działania */}
             <Row>
               <Column align="center" className="pt-8">
-                <Button
-                  href={orderUrl}
-                  target="_blank"
-                  className="px-10 py-6 bg-red-700 text-white"
-                >
+                <Button href={orderUrl} target="_blank" className="px-10 py-6 bg-red-700 text-white">
                   Zobacz szczegóły zamówienia
                 </Button>
               </Column>
@@ -166,13 +139,11 @@ export default function OrderConfirmationEmail(
             </Row>
           </Section>
 
-          {/* Sekcja pomocy */}
           <Row>
             <Column>
               <Heading as="h4">Masz problem z zamówieniem?</Heading>
               <Text>
-                Jeśli masz pytania dotyczące zamówienia, skontaktuj się z nami
-                pod adresem{" "}
+                Jeśli masz pytania dotyczące zamówienia, skontaktuj się z nami pod adresem{" "}
                 <a href="mailto:kontakt@pizzahub.pl" className="text-red-700">
                   kontakt@pizzahub.pl
                 </a>
@@ -186,8 +157,6 @@ export default function OrderConfirmationEmail(
   );
 }
 
-// ---- PRZYKŁAD UŻYCIA ----
-// Tak mógłby wyglądać obiekt z danymi przekazywany do komponentu:
 const exampleProps: OrderConfirmationEmailProps = {
   name: "Anna",
   orderId: "12345-ABCDE",
@@ -195,10 +164,10 @@ const exampleProps: OrderConfirmationEmailProps = {
   items: [
     { name: "Pizza Margherita", quantity: 1, price: 32.0 },
     { name: "Pizza Pepperoni", quantity: 1, price: 38.5 },
-    { name: "Sos czosnkowy", quantity: 2, price: 6.0 },
+    { name: "Sos czosnkowy", quantity: 2, price: 6.0 }
   ],
   total: 76.5,
   deliveryAddress: "ul. Kwiatowa 12/3, 00-001 Warszawa",
   estimatedDeliveryTime: "30-45 minut",
-  orderUrl: "https://pizzahub.pl/moje-konto/zamowienia/12345-ABCDE",
+  orderUrl: "https://pizzahub.pl/moje-konto/zamowienia/12345-ABCDE"
 };

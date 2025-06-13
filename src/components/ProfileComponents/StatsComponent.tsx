@@ -169,12 +169,14 @@ export default function StatsComponent() {
 
         {stats.topSelect && (
           <Card className="py-0 flex-col gap-0 bg-white rounded-xl shadow-xl border border-stone-200 flex overflow-hidden hover:scale-[1.02] transition-transform duration-300">
-            <CardHeader className="bg-stone-100 p-5 border-b">
+            <CardHeader className="bg-red-700 text-white p-5 border-b">
               <div className="flex items-center gap-3">
-                <ChefHat className="h-8 w-8 text-red-600" />
+                <ChefHat className="h-8 w-8 text-white" />
                 <div>
                   <CardTitle className="text-2xl font-bold">Mistrz wyboru</CardTitle>
-                  <CardDescription>Pizza, która najczęściej gości na Twoim stole.</CardDescription>
+                  <CardDescription className="text-white">
+                    Pizza, która najczęściej gości na Twoim stole.
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>

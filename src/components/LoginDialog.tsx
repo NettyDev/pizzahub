@@ -100,7 +100,12 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit">Zaloguj się</Button>
+                <Button
+                  type="submit"
+                  className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
+                >
+                  Zaloguj się
+                </Button>
                 <a href="#" onClick={() => setIsPasswordResetOpen(true)}>
                   Nie pamiętam hasła
                 </a>
@@ -148,6 +153,7 @@ function PasswordResetDialog({
             onChange={(e) => setEmail(e.target.value)}
           />
           <Button
+            className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
             onClick={() => {
               authClient
                 .forgetPassword({
@@ -174,7 +180,7 @@ function PasswordResetDialog({
                 });
             }}
           >
-            Zaloguj się
+            Resetuj hasło
           </Button>
         </div>
       </DialogContent>

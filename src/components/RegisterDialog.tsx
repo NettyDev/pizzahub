@@ -205,7 +205,12 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 Akceptuję regulamin i politykę prywatności serwisu PizzaHub
               </Label>
             </div>
-            <Button type="submit">Załóż konto</Button>
+            <Button
+              type="submit"
+              className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
+            >
+              Załóż konto
+            </Button>
           </form>
         </Form>
       </DialogContent>

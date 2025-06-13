@@ -85,6 +85,7 @@ function ResetPassword({
             render={({ field }) => <Input placeholder="Potwierdź nowe hasło" type="password" {...field} />}
           />
           <Button
+            className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
             onClick={handleSubmit(
               async ({ newPassword }) => {
                 const { data, error } = await authClient.resetPassword({
