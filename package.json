@@ -3,7 +3,6 @@
   "version": "0.6.0",
   "private": true,
   "scripts": {
-    "postinstall": "bun pre && bun generate",
     "dev": "next dev --turbopack",
     "pre": "bun entrypoint.ts",
     "dev:email": "email dev --port 3001",
