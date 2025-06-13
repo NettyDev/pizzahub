@@ -17,42 +17,41 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface OrderItemStats {
+  id: number;
   name: string;
   quantity: number;
   totalSpent: number;
-  averageRating?: number;
-  count: number;
   image?: string;
 }
 
 interface UserStatsData {
-  totalOrders: number;
-  totalPizzasOrdered: number;
+  ordersQuantity: number;
+  pizzaQuantity: number;
   totalSpent: number;
-  favoritePizza?: { name: string; rating: number; image?: string };
-  averageOrderValue: number;
-  timeSavedMinutes?: number;
-  mostFrequentPizza?: OrderItemStats;
+  averageSpent: number;
+  savedTime?: number;
+  topSelect?: OrderItemStats;
 }
 
 const fetchUserStats = async (): Promise<UserStatsData> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return {
-    totalOrders: 12,
-    totalPizzasOrdered: 25,
-    totalSpent: 850.75,
-    favoritePizza: { name: "Cheesus Christ!", rating: 4.8, image: "/pizzas/cheesus-christ.png" },
-    averageOrderValue: 70.9,
-    timeSavedMinutes: 25 * 30,
-    mostFrequentPizza: {
-      name: "Onuris",
-      quantity: 7,
-      totalSpent: 287,
-      count: 5,
-      averageRating: 4.2,
-      image: "/pizzas/cheesus-christ.png"
+  try {
+    const response = await fetch("/api/profile/stats");
+    const json = await response.json();
+    if (!response.ok || !json || !json.result) {
+      throw new Error("Failed to fetch user stats");
     }
-  };
+    return json.result;
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    return {
+      ordersQuantity: 0,
+      pizzaQuantity: 0,
+      totalSpent: 0,
+      averageSpent: 0,
+      savedTime: 0,
+      topSelect: undefined
+    };
+  }
 };
 
 const StatCard = ({
@@ -124,8 +123,8 @@ export default function StatsComponent() {
     );
   }
 
-  const timeSavedHours = stats.timeSavedMinutes ? Math.floor(stats.timeSavedMinutes / 60) : 0;
-  const timeSavedRemainingMinutes = stats.timeSavedMinutes ? stats.timeSavedMinutes % 60 : 0;
+  const timeSavedHours = stats.savedTime ? Math.floor(stats.savedTime / 60) : 0;
+  const timeSavedRemainingMinutes = stats.savedTime ? stats.savedTime % 60 : 0;
 
   return (
     <div className="space-y-10 md:space-y-12 py-8 px-4 sm:px-5 md:px-6">
@@ -134,8 +133,8 @@ export default function StatsComponent() {
         Zobacz podsumowanie swoich kulinarnych podbojów w PizzaHub! Oto, jak wyglądają Twoje statystyki.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
-        {stats.favoritePizza && (
+      <div className="w-full">
+        {/* {stats.favoritePizza && (
           <Card className="py-0 gap-0 bg-white rounded-xl shadow-xl border-2 border-red-700 flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-300">
             <CardHeader className="bg-red-700 text-white p-5">
               <div className="flex items-center gap-3">
@@ -166,10 +165,10 @@ export default function StatsComponent() {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
-        {stats.mostFrequentPizza && (
-          <Card className="py-0 gap-0 bg-white rounded-xl shadow-xl border border-stone-200 flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+        {stats.topSelect && (
+          <Card className="py-0 flex-col gap-0 bg-white rounded-xl shadow-xl border border-stone-200 flex overflow-hidden hover:scale-[1.02] transition-transform duration-300">
             <CardHeader className="bg-stone-100 p-5 border-b">
               <div className="flex items-center gap-3">
                 <ChefHat className="h-8 w-8 text-red-600" />
@@ -179,70 +178,72 @@ export default function StatsComponent() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-2 sm:p-3 flex-grow flex flex-col justify-center">
-              {stats.mostFrequentPizza.image && (
+            <CardContent className="p-2 sm:p-3 flex-grow flex flex-col lg:gap-4 lg:flex-row justify-center">
+              {stats.topSelect.image && (
                 <img
-                  src={stats.mostFrequentPizza.image}
-                  alt={stats.mostFrequentPizza.name}
-                  className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-full mx-auto mb-4 shadow-lg border-4 border-white"
+                  src={stats.topSelect.image}
+                  alt={stats.topSelect.name}
+                  className="w-40 h-40 sm:w-48 sm:h-48 object-cover rounded-full mx-auto lg:mx-0 mb-4 shadow-lg border-4 border-white"
                 />
               )}
-              <p className="text-2xl sm:text-3xl font-bold mb-3 text-center">{stats.mostFrequentPizza.name}</p>
-              <div className="text-sm space-y-1.5 p-4 rounded-lg">
-                <div className="flex justify-between border-b py-2">
-                  <span>Zamówiona:</span> <span className="font-semibold">{stats.mostFrequentPizza.count} razy</span>
-                </div>
-                <div className="flex justify-between border-b py-2">
-                  <span>Łącznie wydano:</span>{" "}
-                  <span className="font-semibold">{stats.mostFrequentPizza.totalSpent.toFixed(2)} zł</span>
-                </div>
-                {/* {stats.mostFrequentPizza.averageRating && (
+              <div className="lg:w-1/2">
+                <p className="text-2xl sm:text-3xl font-bold mb-3 text-center">{stats.topSelect.name}</p>
+                <div className="text-sm space-y-1.5 p-4 rounded-lg">
+                  <div className="flex justify-between border-b py-2">
+                    <span>Zamówiona:</span> <span className="font-semibold">{stats.topSelect.quantity} razy</span>
+                  </div>
+                  <div className="flex justify-between border-b py-2">
+                    <span>Łącznie wydano:</span>{" "}
+                    <span className="font-semibold">{stats.topSelect.totalSpent.toFixed(2)} zł</span>
+                  </div>
+                  {/* {stats.topSelect.averageRating && (
                   <div className="flex items-center justify-between pt-1">
                     <span>Średnia ocena tej pizzy:</span>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${i < Math.round(stats.mostFrequentPizza!.averageRating!) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
+                          className={`h-4 w-4 ${i < Math.round(stats.topSelect!.averageRating!) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
                         />
                       ))}
                       <span className="ml-1.5 text-xs font-semibold">
-                        ({stats.mostFrequentPizza.averageRating.toFixed(1)})
+                        ({stats.topSelect.averageRating.toFixed(1)})
                       </span>
                     </div>
                   </div>
                 )} */}
-                {stats.mostFrequentPizza.averageRating && (
-                  <div className="flex items-center justify-center pt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-6 w-6 ${i < Math.round(stats.mostFrequentPizza!.averageRating!) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
-                      />
-                    ))}
-                    <span className="ml-1.5 text-xs font-semibold">
-                      ({stats.mostFrequentPizza.averageRating.toFixed(1)})
-                    </span>
-                  </div>
-                )}
+                  {/* {stats.topSelect.averageRating && (
+                    <div className="flex items-center justify-center pt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-6 w-6 ${i < Math.round(stats.topSelect!.averageRating!) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
+                        />
+                      ))}
+                      <span className="ml-1.5 text-xs font-semibold">
+                        ({stats.topSelect.averageRating.toFixed(1)})
+                      </span>
+                    </div>
+                  )} */}
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
 
-      {(stats.favoritePizza || stats.mostFrequentPizza) && <Separator className="my-10 md:my-12" />}
+      {stats.topSelect && <Separator className="my-10 md:my-12" />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
         <StatCard
           title="Twoje Zamówienia"
-          value={stats.totalOrders}
+          value={stats.ordersQuantity}
           icon={CheckCircle}
           description="Liczba wszystkich zrealizowanych zamówień."
         />
         <StatCard
           title="Pizze na Koncie"
-          value={stats.totalPizzasOrdered}
+          value={stats.pizzaQuantity}
           icon={Pizza}
           description="Tyle pysznych pizz już za Tobą!"
         />
@@ -255,12 +256,12 @@ export default function StatsComponent() {
         />
         <StatCard
           title="Średnio na zamówienie"
-          value={stats.averageOrderValue.toFixed(2)}
+          value={stats.averageSpent.toFixed(2)}
           unit="zł"
           icon={TrendingUp}
           description="Przeciętna wartość Twoich pizzowych uczt."
         />
-        {stats.timeSavedMinutes !== undefined && stats.timeSavedMinutes > 0 && (
+        {stats.savedTime !== undefined && stats.savedTime > 0 && (
           <StatCard
             title="Czas dla Ciebie"
             value={`${timeSavedHours}h ${timeSavedRemainingMinutes}m`}

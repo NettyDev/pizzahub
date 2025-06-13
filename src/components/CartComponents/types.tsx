@@ -14,10 +14,9 @@ export interface CartSummaryData {
 }
 
 export interface ContactFormData {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
+  name: string;
+  surname: string;
+  phone: string | undefined;
 }
 
 export interface DeliveryFormData {

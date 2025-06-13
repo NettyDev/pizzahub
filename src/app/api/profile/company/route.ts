@@ -16,7 +16,20 @@ export async function GET(request: Request) {
     });
 
     if (!company) {
-      return Response.json({ company: null, status: "OK" }, { status: 200 });
+      return Response.json(
+        {
+          company: {
+            nip: "",
+            name: "",
+            street: "",
+            suite: "",
+            zipcode: "",
+            city: ""
+          },
+          status: "OK"
+        },
+        { status: 200 }
+      );
     }
 
     return Response.json({ company, status: "OK" });

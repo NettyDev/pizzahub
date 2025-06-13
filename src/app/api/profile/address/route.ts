@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         address: {
           street: "",
           suite: "",
-          postalCode: "",
+          zipcode: "",
           city: ""
         }
       });

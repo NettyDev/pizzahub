@@ -177,6 +177,7 @@ export async function GET(request: Request) {
 
   const orders = await prisma.order.findMany({
     where: { userId: session.user.id },
+    orderBy: { orderDate: "desc" },
     include: {
       PizzaOrder: {
         include: {

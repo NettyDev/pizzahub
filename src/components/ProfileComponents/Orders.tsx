@@ -1,7 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Info, CheckCircleIcon, TruckIcon, XCircleIcon, ClockIcon, ShoppingBag, Star } from "lucide-react";
+import {
+  X,
+  Info,
+  CheckCircleIcon,
+  TruckIcon,
+  XCircleIcon,
+  ClockIcon,
+  ShoppingBag,
+  Star,
+  LoaderCircle
+} from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import StarRating from "./StarRating";
@@ -120,6 +130,7 @@ export default function Orders() {
   };
 
   const [orders, setOrders] = React.useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/order")
@@ -130,6 +141,7 @@ export default function Orders() {
         } else {
           console.error("Błąd podczas pobierania zamówień:", data.message);
         }
+        setIsLoading(false);
       });
   }, []);
 
@@ -139,6 +151,15 @@ export default function Orders() {
   //   );
   //   console.log(`Zamówienie ${orderId} ocenione na ${rating} gwiazdek`);
   // };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 sm:p-8 md:p-10 text-center min-h-[300px] flex flex-col justify-center items-center">
+        <LoaderCircle className="h-16 w-16 text-red-400 mx-auto mb-4 animate-spin" />
+        <p className="font-semibold text-lg">Ładowanie Twoich zamówień...</p>
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
