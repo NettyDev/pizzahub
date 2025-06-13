@@ -9,14 +9,19 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "./ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 const FormSchema = z
   .object({
-    name: z.string(),
-    surname: z.string(),
-    email: z.string(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8)
+    name: z.string().min(1, "Imię jest wymagane"),
+    surname: z.string().min(1, "Nazwisko jest wymagane"),
+    email: z.string().email("Nieprawidłowy adres email").min(1, "Email jest wymagany"),
+    password: z.string().min(8, "Hasło musi mieć od 8 do 28 znaków").max(28, "Hasło musi mieć od 8 do 28 znaków"),
+    confirmPassword: z.string(),
+    agreement1: z.boolean().refine((val) => val, {
+      message: "Musisz zaakceptować regulamin"
+    })
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (confirmPassword !== password) {
@@ -41,7 +46,8 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
       surname: "",
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      agreement1: false
     }
   });
 
@@ -68,7 +74,7 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
           console.error(ctx.error);
         },
         onSuccess: (ctx) => {
-          toast.success("Konto utworzono pomyślnie");
+          toast.success("Konto utworzono pomyślnie. Sprawdź swoją skrzynkę e-mail, aby zweryfikować adres.");
           onOpenChange(false);
           form.reset();
         }
@@ -83,7 +89,44 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
           <DialogDescription>Tutaj możesz założyć konto na naszym portalu.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.log("Form errors:", errors);
+              const formatKey = (key: string) => {
+                switch (key) {
+                  case "contact":
+                    return "Dane kontaktowe";
+                  case "delivery":
+                    return "Dane dostawy";
+                  case "company":
+                    return "Dane firmy";
+                  default:
+                    return key;
+                }
+              };
+              if (Object.keys(errors).length > 0) {
+                toast.error(
+                  <ul>
+                    {Object.values(errors).map((error, idx) => {
+                      if (!("message" in error)) {
+                        return (
+                          <li>
+                            <p>{formatKey(Object.keys(errors)[idx])}</p>
+                            <ul className="pl-4 list-disc">
+                              {Object.values(error).map((subError) => (
+                                <li key={subError.message}>{subError.message}</li>
+                              ))}
+                            </ul>
+                          </li>
+                        );
+                      } else return <li>{error.message}</li>;
+                    })}
+                  </ul>
+                );
+              }
+            })}
+            className="flex flex-col gap-4"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -91,7 +134,7 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 <FormItem>
                   <FormLabel>Imię</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tomasz" required {...field} />
+                    <Input placeholder="Tomasz" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -103,7 +146,7 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 <FormItem>
                   <FormLabel>Nazwisko</FormLabel>
                   <FormControl>
-                    <Input placeholder="Kowalski" required {...field} />
+                    <Input placeholder="Kowalski" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -115,7 +158,7 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 <FormItem>
                   <FormLabel>E-mail</FormLabel>
                   <FormControl>
-                    <Input placeholder="mail@example.com" required type="email" {...field} />
+                    <Input placeholder="mail@example.com" type="email" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -127,7 +170,7 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 <FormItem>
                   <FormLabel>Hasło</FormLabel>
                   <FormControl>
-                    <Input placeholder="********" required type="password" {...field} />
+                    <Input placeholder="********" type="password" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -139,11 +182,29 @@ export default function RegisterDialog({ open, onOpenChange }: RegisterDialogPro
                 <FormItem>
                   <FormLabel>Powtórz hasło</FormLabel>
                   <FormControl>
-                    <Input placeholder="********" required type="password" {...field} />
+                    <Input placeholder="********" type="password" {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
+            <div className="flex items-start space-x-3">
+              <FormField
+                name="agreement1"
+                control={form.control}
+                render={({ field: { value, onChange } }) => (
+                  <Checkbox
+                    id="terms"
+                    checked={value}
+                    onCheckedChange={onChange}
+                    className="mt-0.5 border-stone-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600 focus:ring-offset-0 focus:ring-2 focus:ring-red-500"
+                  />
+                )}
+              />
+
+              <Label htmlFor="terms" className="text-xs sm:text-sm leading-snug cursor-pointer">
+                Akceptuję regulamin i politykę prywatności serwisu PizzaHub
+              </Label>
+            </div>
             <Button type="submit">Załóż konto</Button>
           </form>
         </Form>

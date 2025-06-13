@@ -15,6 +15,7 @@ import { deepEqual } from "../CartContext";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { CompanyFormData, ContactFormData, DeliveryFormData } from "../CartComponents/types";
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -125,42 +126,6 @@ export default function Settings() {
     selectAllState = "indeterminate";
   }
 
-  // const errorHandler = (errors: FieldErrors<{ [key: string]: any }>) => {
-  //   console.log("Form errors:", errors);
-  //   const formatKey = (key: string) => {
-  //     switch (key) {
-  //       case "contact":
-  //         return "Dane kontaktowe";
-  //       case "delivery":
-  //         return "Dane dostawy";
-  //       case "company":
-  //         return "Dane firmy";
-  //       default:
-  //         return key;
-  //     }
-  //   };
-  //   if (Object.keys(errors).length > 0) {
-  //     toast.error(
-  //       <ul>
-  //         {Object.values(errors).map((error, idx) => {
-  //           if (!("message" in error)) {
-  //             return (
-  //               <li>
-  //                 <p>{formatKey(Object.keys(errors)[idx])}</p>
-  //                 <ul className="pl-4 list-disc">
-  //                   {Object.values(error).map((subError) => (
-  //                     <li key={subError.message}>{subError.message}</li>
-  //                   ))}
-  //                 </ul>
-  //               </li>
-  //             );
-  //           } else return <li>{error.message}</li>;
-  //         })}
-  //       </ul>
-  //     );
-  //   }
-  // };
-
   if (isLoading) {
     return (
       <div className="p-6 sm:p-8 md:p-10 text-center min-h-[300px] flex flex-col justify-center items-center">
@@ -214,249 +179,6 @@ export default function Settings() {
       });
   };
 
-  // React.useEffect(() => {
-  //   if (isPending || !session || accountData.firstName !== "" || accountData.lastName !== "") return;
-  //   setAccountData({
-  //     firstName: session.user.name || "",
-  //     lastName: session.user.surname || "",
-  //     phone: session.user.phone || ""
-  //   });
-  // }, [session, isPending]);
-
-  // const [accountData, setAccountData] = React.useState({
-  //   firstName: "",
-  //   lastName: "",
-  //   phone: ""
-  // });
-
-  // const [debounced] = useDebounce(accountData, 2500);
-
-  // React.useEffect(() => {
-  //   if (isPending || !session || accountData.firstName === "" || accountData.lastName === "") return;
-  //   console.log("Zapisuję dane konta:", debounced);
-  //   if (
-  //     debounced.firstName !== session.user.name ||
-  //     debounced.lastName !== session.user.surname ||
-  //     debounced.phone !== session.user.phone
-  //   ) {
-  //     const schema = z
-  //       .object({
-  //         firstName: z.string().min(1, "Imię jest wymagane"),
-  //         lastName: z.string().min(1, "Nazwisko jest wymagane"),
-  //         phone: z.union([
-  //           z
-  //             .string()
-  //             .regex(/^(\+48\s?)?\d{3}[\s-]?\d{3}[\s-]?\d{3}$/, "Telefon musi być w poprawnym formacie polskim"),
-  //           z.literal("")
-  //         ])
-  //       })
-  //       .safeParse(debounced);
-  //     if (!schema.success) {
-  //       toast.error(
-  //         <ul>
-  //           {schema.error.errors.map((e) => (
-  //             <li key={e.path.join(".")}>{e.message}</li>
-  //           ))}
-  //         </ul>
-  //       );
-  //     } else {
-  //       authClient
-  //         .updateUser({
-  //           name: debounced.firstName,
-  //           surname: debounced.lastName,
-  //           phone: debounced.phone
-  //         })
-  //         .then(() => {
-  //           toast.success("Dane konta zostały zaktualizowane.");
-  //         });
-  //     }
-  //   }
-  // }, [debounced]);
-
-  // const [isAddressLoading, setIsAddressLoading] = React.useState(true);
-  // const [oldAddress, setOldAddress] = React.useState({
-  //   street: "",
-  //   suite: "",
-  //   zipCode: "",
-  //   city: ""
-  // });
-  // const [address, setAddress] = React.useState({
-  //   street: "",
-  //   suite: "",
-  //   zipCode: "",
-  //   city: ""
-  // });
-
-  // React.useEffect(() => {
-  //   fetch("/api/profile/address")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.status === "OK") {
-  //         setAddress({
-  //           street: data.address.street || "",
-  //           suite: data.address.suite || "",
-  //           zipCode: data.address.zipCode || "",
-  //           city: data.address.city || ""
-  //         });
-  //         setOldAddress({
-  //           street: data.address.street || "",
-  //           suite: data.address.suite || "",
-  //           zipCode: data.address.zipCode || "",
-  //           city: data.address.city || ""
-  //         });
-  //         setIsAddressLoading(false);
-  //         console.log("Pobrano adres:", data.address);
-  //       } else {
-  //         toast.error("Wystąpił błąd podczas pobierania adresu.");
-  //       }
-  //     });
-  // }, []);
-
-  // const [debouncedAddress] = useDebounce(address, 2500);
-
-  // React.useEffect(() => {
-  //   if (isPending || !session || isAddressLoading || deepEqual(oldAddress, address)) return;
-  //   console.log("Zapisuję adres:", debouncedAddress);
-
-  //   const schema = z
-  //     .object({
-  //       street: z.string(),
-  //       suite: z.string(),
-  //       zipCode: z.union([z.string().regex(/^\d{2}-\d{3}$/, "Kod pocztowy musi być w formacie XX-XXX"), z.literal("")]),
-  //       city: z.string()
-  //     })
-  //     .safeParse(debouncedAddress);
-
-  //   if (!schema.success) {
-  //     toast.error(
-  //       <ul>
-  //         {schema.error.errors.map((e) => (
-  //           <li key={e.path.join(".")}>{e.message}</li>
-  //         ))}
-  //       </ul>
-  //     );
-  //     return;
-  //   }
-
-  //   fetch("/api/profile/address", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({ address: debouncedAddress })
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.status === "OK") {
-  //         setOldAddress(debouncedAddress);
-  //         toast.success("Adres został zaktualizowany.");
-  //       } else {
-  //         toast.error("Wystąpił błąd podczas aktualizacji adresu.");
-  //       }
-  //     })
-  //     .catch(() => {
-  //       toast.error("Wystąpił błąd podczas aktualizacji adresu.");
-  //     });
-  // }, [debouncedAddress]);
-
-  // const [isCompanyLoading, setIsCompanyLoading] = React.useState(true);
-  // const [companyData, setCompanyData] = React.useState({
-  //   nip: "",
-  //   name: "",
-  //   street: "",
-  //   suite: "",
-  //   zipcode: "",
-  //   city: ""
-  // });
-  // const [oldCompanyData, setOldCompanyData] = React.useState({
-  //   nip: "",
-  //   name: "",
-  //   street: "",
-  //   suite: "",
-  //   zipcode: "",
-  //   city: ""
-  // });
-  // React.useEffect(() => {
-  //   fetch("/api/profile/company")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.status === "OK" && data.company) {
-  //         if (data.company) {
-  //           setCompanyData({
-  //             nip: data.company.nip || "",
-  //             name: data.company.name || "",
-  //             street: data.company.street || "",
-  //             suite: data.company.suite || "",
-  //             zipcode: data.company.zipcode || "",
-  //             city: data.company.city || ""
-  //           });
-  //           setOldCompanyData({
-  //             nip: data.company.nip || "",
-  //             name: data.company.name || "",
-  //             street: data.company.street || "",
-  //             suite: data.company.suite || "",
-  //             zipcode: data.company.zipcode || "",
-  //             city: data.company.city || ""
-  //           });
-  //           setCompany(true);
-  //         } else {
-  //           setCompany(false);
-  //         }
-  //         setIsCompanyLoading(false);
-  //         console.log("Pobrano dane firmy:", data.company);
-  //       } else {
-  //         toast.error("Wystąpił błąd podczas pobierania danych firmy.");
-  //       }
-  //     });
-  // }, []);
-  // const [debouncedCompany] = useDebounce(companyData, 2500);
-  // React.useEffect(() => {
-  //   if (isPending || !session || isCompanyLoading || deepEqual(oldCompanyData, companyData)) return;
-
-  //   console.log("Zapisuję dane firmy:", debouncedCompany);
-
-  //   const schema = z
-  //     .object({
-  //       nip: z.string().regex(/^\d{10}$/, "NIP musi mieć 10 cyfr"),
-  //       name: z.string().min(1, "Nazwa firmy jest wymagana"),
-  //       street: z.string(),
-  //       suite: z.string(),
-  //       zipcode: z.union([z.string().regex(/^\d{2}-\d{3}$/, "Kod pocztowy musi być w formacie XX-XXX"), z.literal("")]),
-  //       city: z.string()
-  //     })
-  //     .safeParse(debouncedCompany);
-
-  //   if (!schema.success) {
-  //     toast.error(
-  //       <ul>
-  //         {schema.error.errors.map((e) => (
-  //           <li key={e.path.join(".")}>{e.message}</li>
-  //         ))}
-  //       </ul>
-  //     );
-  //     return;
-  //   }
-
-  //   fetch("/api/profile/company", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({ company: debouncedCompany })
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.status === "OK") {
-  //         setOldCompanyData(debouncedCompany);
-  //         toast.success("Dane firmy zostały zaktualizowane.");
-  //       } else {
-  //         toast.error("Wystąpił błąd podczas aktualizacji danych firmy.");
-  //       }
-  //     })
-  //     .catch(() => {
-  //       toast.error("Wystąpił błąd podczas aktualizacji danych firmy.");
-  //     });
-  // }, [debouncedCompany]);
   return (
     <div className="p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="flex items-center gap-2 mb-4">
@@ -809,8 +531,46 @@ export default function Settings() {
                 </div>
               </div>
 
-              <Button className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200 mt-6">
-                Zapisz wszystkie zmiany
+              <Button
+                onClick={() => {
+                  const agreements = getValues("agreements");
+                  if (!agreements) return;
+                  const schema = z
+                    .object({
+                      newsletter: z.boolean(),
+                      ai: z.boolean(),
+                      ereceipt: z.boolean()
+                    })
+                    .safeParse(agreements);
+                  if (!schema.success) {
+                    toast.error(
+                      <ul>
+                        {schema.error.errors.map((e) => (
+                          <li key={e.path.join(".")}>{e.message}</li>
+                        ))}
+                      </ul>
+                    );
+                    return;
+                  }
+                  authClient
+                    .updateUser({
+                      agreement1: agreements.newsletter,
+                      agreement2: agreements.ai,
+                      agreement3: agreements.ereceipt
+                    })
+                    .then(() => {
+                      toast.success("Ustawienia zgód zostały zaktualizowane.");
+                      refetch();
+                    })
+                    .catch((err) => {
+                      console.error("Błąd podczas aktualizacji ustawień zgód:", err);
+                      toast.error("Wystąpił błąd podczas aktualizacji ustawień zgód.");
+                    });
+                }}
+                className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200 mt-6"
+              >
+                <Save />
+                Zapisz
               </Button>
             </div>
           </div>
@@ -824,7 +584,12 @@ export default function Settings() {
       </p>
       <Button
         className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-white transition-colors duration-200"
-        onClick={() => alert("Twoje konto zostało usunięte.")}
+        onClick={() =>
+          authClient.deleteUser().then(() => {
+            toast.success("Twoje konto zostało usunięte.");
+            redirect("/");
+          })
+        }
       >
         Usuń konto
       </Button>

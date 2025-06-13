@@ -9,6 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "./ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const FormSchema = z.object({
   email: z.string(),
@@ -21,6 +22,7 @@ interface LoginDialogProps {
 }
 
 export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
+  const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -64,42 +66,116 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
     );
   }
   return (
+    <>
+      <Dialog {...{ open, onOpenChange }}>
+        <DialogContent className="max-w-70 w-auto">
+          <DialogHeader>
+            <DialogTitle>Logowanie</DialogTitle>
+            <DialogDescription>Tutaj możesz zalogować się do naszego portalu.</DialogDescription>
+          </DialogHeader>
+          <div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-mail</FormLabel>
+                      <FormControl>
+                        <Input placeholder="mail@example.com" required type="email" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hasło</FormLabel>
+                      <FormControl>
+                        <Input placeholder="********" required type="password" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit">Zaloguj się</Button>
+                <a href="#" onClick={() => setIsPasswordResetOpen(true)}>
+                  Nie pamiętam hasła
+                </a>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <PasswordResetDialog
+        open={isPasswordResetOpen}
+        onOpenChange={(open) => {
+          setIsPasswordResetOpen(open);
+        }}
+        close={() => {
+          onOpenChange(false);
+        }}
+      />
+    </>
+  );
+}
+
+function PasswordResetDialog({
+  open,
+  onOpenChange,
+  close
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  close?: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  return (
     <Dialog {...{ open, onOpenChange }}>
       <DialogContent className="max-w-70 w-auto">
         <DialogHeader>
-          <DialogTitle>Logowanie</DialogTitle>
-          <DialogDescription>Tutaj możesz zalogować się do naszego portalu.</DialogDescription>
+          <DialogTitle>Resetowanie hasła</DialogTitle>
+          <DialogDescription>Tutaj możesz zresetować swoje hasło.</DialogDescription>
         </DialogHeader>
-        <div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>E-mail</FormLabel>
-                    <FormControl>
-                      <Input placeholder="mail@example.com" required type="email" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hasło</FormLabel>
-                    <FormControl>
-                      <Input placeholder="********" required type="password" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Zaloguj się</Button>
-            </form>
-          </Form>
+        <div className="flex flex-col gap-2">
+          <Input
+            placeholder="mail@example.com"
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button
+            onClick={() => {
+              authClient
+                .forgetPassword({
+                  email: email,
+                  redirectTo: "/"
+                })
+                .then(() => {
+                  toast.success("Link do resetowania hasła został wysłany na podany adres e-mail.");
+                  onOpenChange(false);
+                  close?.();
+                })
+                .catch((error) => {
+                  switch (error.code) {
+                    case "INVALID_EMAIL":
+                      toast.error("Wystąpił błąd", { description: "Nieprawidłowy adres email" });
+                      break;
+                    case "EMAIL_NOT_VERIFIED":
+                      toast.error("Wystąpił błąd", { description: "Email nie został zweryfikowany" });
+                      break;
+                    default:
+                      toast.error("Wystąpił błąd", { description: error.message });
+                  }
+                  console.error(error);
+                });
+            }}
+          >
+            Zaloguj się
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

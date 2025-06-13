@@ -1,19 +1,7 @@
-import {
-  Button,
-  Html,
-  Section,
-  Row,
-  Column,
-  Img,
-  Head,
-  Text,
-  Font,
-  Heading,
-  Tailwind,
-} from "@react-email/components";
+import { Button, Html, Section, Row, Column, Img, Head, Text, Font, Heading, Tailwind } from "@react-email/components";
 import Fonts from "./components/Fonts";
 
-export default function WelcomeEmail(props: { name: string; url: string }) {
+export default function Hello(props: { name: string; url: string }) {
   return (
     <Html>
       <Head>
@@ -33,23 +21,18 @@ export default function WelcomeEmail(props: { name: string; url: string }) {
                 <Heading as="h1">Witaj w PizzaHub, {props.name}!</Heading>
                 <Text>Cześć {props.name},</Text>
                 <Text>
-                  Dziękujemy za rejestrację w naszym serwisie! Cieszymy się, że
-                  do nas dołączyłeś. Twoje konto zostało pomyślnie utworzone.
+                  Dziękujemy za rejestrację w naszym serwisie! Cieszymy się, że do nas dołączyłeś. Twoje konto zostało
+                  pomyślnie utworzone.
                 </Text>
                 <Text>
-                  Od teraz możesz zamawiać swoją ulubioną pizzę szybko i
-                  wygodnie. Kliknij przycisk poniżej, aby przejść do serwisu i
-                  złożyć swoje pierwsze zamówienie.
+                  Od teraz możesz zamawiać swoją ulubioną pizzę szybko i wygodnie. Kliknij przycisk poniżej, aby przejść
+                  do serwisu i złożyć swoje pierwsze zamówienie.
                 </Text>
               </Column>
             </Row>
             <Row>
               <Column align="center">
-                <Button
-                  href={props.url}
-                  target="_blank"
-                  className="px-10 py-6 bg-red-700 text-white"
-                >
+                <Button href={props.url} target="_blank" className="px-10 py-6 bg-red-700 text-white">
                   Zacznij zamawiać
                 </Button>
               </Column>
@@ -67,8 +50,7 @@ export default function WelcomeEmail(props: { name: string; url: string }) {
             <Column>
               <Heading as="h4">Potrzebujesz pomocy?</Heading>
               <Text>
-                Jeśli masz jakieś pytania, komentarze lub sugestie, możesz do
-                nas napisać na{" "}
+                Jeśli masz jakieś pytania, komentarze lub sugestie, możesz do nas napisać na{" "}
                 <a href="mailto:kontakt@pizzahub.pl" className="text-red-700">
                   kontakt@pizzahub.pl
                 </a>
