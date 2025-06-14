@@ -1,38 +1,153 @@
-# PizzaHub
+# PizzaHub - Projekt PSI
 
-Projekt stworzony na przedmiot `Projektowanie stron internetowych` oraz `Komunikacja człowiek-komputer`.
+Projekt stworzony na przedmiot `Projektowanie stron internetowych`.
 
-## Getting Started
+## Wymagania systemowe
 
-First, run the development server:
+- **Bun** (najnowsza wersja) - [Instrukcja instalacji](https://bun.sh/)
+- **Docker** lub **Podman** z Docker Compose
+- **Git**
+
+## Instalacja
+
+1. Sklonuj repozytorium:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone <url-repozytorium>
+cd pizzahub
+```
+
+2. Zainstaluj zależności:
+
+```bash
+bun install
+```
+
+3. Skonfiguruj zmienne środowiskowe:
+
+```bash
+cp dev.env .env
+# Plik jest używany tylko i wyłącznie do trybu deweloperskiego.
+# Zawiera on już poprawne dane testowe.
+```
+
+## Uruchamianie projektu
+
+### Tryb deweloperski
+
+1. Uruchom docker-compose.dev.yml
+
+```bash
+sudo docker compose -f docker-compose.dev.yml up -d
+```
+
+Można skorzystać z profilu `ai` jeżeli chcemy skorzystać z `Pizzi`.
+
+```bash
+sudo docker compose -f docker-compose.dev.yml --profile ai up -d
+```
+
+2. Uruchom skrypt entrypoint.ts
+
+```bash
+bun entrypoint.ts
+```
+
+Skrypt powinien odczytać zmienne z pliku `.env` i na jej podstawie połączyć się z bazą danych, zainicjować jej strukturę oraz wstawić przykładowe dane. Jeżeli użyto profilu `ai` pobierze on również LLM (domyślnie gemma3:1b, ~900MB).
+
+3. Uruchamiamy generacje biblioteki `prisma`
+
+```bash
+bun generate
+```
+
+4. Uruchamiamy serwer w trybie deweloperskim
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Porty
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **3000** - główna aplikacji
+- **11025** - serwer SMTP `maildev`
+- **11080** - interfejs `maildev` (dostęp do mail'i)
+- **11434** - API `Ollama` (ai)
+- **18080** - `adminer`
+- **15433** - `pgadmin4`
+- **15432** - baza danych `postgres`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Tryb produkcyjny
 
-## Learn More
+Można uruchomić projekt w trybie produkcyjnym na dwa sposoby. Pierwszy to zbudowanie obrazu osobno i uruchomienie `docker compose` z profilem `ready` osobno. Drugi to uruchomienie `docker compose` z profilem `build` który od razu zbuduje obraz i go uruchomi.
 
-To learn more about Next.js, take a look at the following resources:
+#### Sposób pierwszy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Uruchamianie budowania obrazu
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+sudo docker build -t next .
+```
 
-## Deploy on Vercel
+2. Uruchamianie `docker-compose.yml` z profilem `ready`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+sudo docker compose --profile ready up -d
+# Włączenie AI
+sudo docker compose --profile ready --profile ai up -d
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Gotowe. Aplikacja powinna być dostępna pod adresem `http://localhost:3000`
+
+#### Sposób drugi
+
+1. Uruchamianie `docker-compose.yml` z profilem `build`
+
+```bash
+sudo docker compose --profile build up -d
+# Włączenie AI
+sudo docker compose --profile build --profile ai up -d
+```
+
+Uruchomienie może zająć nieco dłużej ponieważ podczas stawiania `docker compose` jest również budowany obraz.
+
+2. Gotowe. Aplikacja powinna być dostępna pod adresem `http://localhost:3000`
+
+#### Uwaga dotycząca profilu `ai`
+
+Jeżeli korzystamy z profilu `ai` to uruchomienie aplikacji może zająć dłużej za pierwszym razem gdyż będzie pobierany LLM.
+
+#### Porty
+
+- **3000** - główna aplikacji
+- **11080** - interfejs `maildev` (dostęp do mail'i)
+- **18080** - `adminer`
+
+## Struktura projektu
+
+```
+├── src/                   # Kod źródłowy aplikacji
+├── prisma/                # Schemat bazy danych
+├── emails/                # Szablony emaili
+├── public/                # Zasoby statyczne
+├── sql/                   # Dane testowe
+├── docker-compose.yml     # Konfiguracja produkcyjna
+├── docker-compose.dev.yml # Konfiguracja deweloperska
+└── entrypoint.ts          # Skrypt inicjalizacyjny
+```
+
+## Dane testowe
+
+### Baza danych
+
+Login: `postgres`
+Hasło: `password`
+Baza danych: `next`
+
+### Użytkownicy
+
+| Login/Email             | Hasło    | Rola  |
+| ----------------------- | -------- | ----- |
+| g.szwyngiel@pizzahub.pl | password | admin |
+| n.zatorska@pizzahub.pl  | password | admin |
+| mail@example.com        | password | user  |
