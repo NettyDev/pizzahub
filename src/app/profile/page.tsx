@@ -64,8 +64,6 @@ export default function Home() {
 function Profile() {
   const { data: session, isPending, refetch } = authClient.useSession();
 
-  const imie = !isPending && session ? `${session?.user.name} ${session?.user.surname}` : "";
-
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:p-10">
       <Tabs defaultValue={tabs[0].value} className="w-full">
@@ -73,13 +71,15 @@ function Profile() {
           <div className="w-full md:w-auto md:min-w-[260px] lg:min-w-[300px] flex flex-col gap-6 md:gap-8 mb-6 md:mb-0">
             <div className="flex items-center gap-4 p-2 md:p-0">
               <UserAvatar
-                user={{ name: imie, image: null }}
+                user={{ name: session?.user.name, image: null, surname: session?.user.surname }}
                 className="h-14 w-14 sm:h-16 sm:w-16"
                 fallbackClassName="text-2xl"
               />
               <div className="flex flex-col min-w-0">
                 <span className="text-sm text-shadow-xs">Cześć,</span>
-                <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">{imie}</span>
+                <span className="text-lg sm:text-xl font-semibold text-red-700 leading-tight truncate">
+                  {session?.user.name}
+                </span>
               </div>
             </div>
 

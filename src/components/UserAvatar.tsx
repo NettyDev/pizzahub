@@ -6,6 +6,7 @@ interface UserAvatarProps {
   user:
     | {
         name?: string | null;
+        surname?: string | null;
         image?: string | null;
       }
     | null
@@ -24,12 +25,12 @@ const getInitials = (name?: string | null) => {
 };
 
 export default function UserAvatar({ user, className, fallbackClassName }: UserAvatarProps) {
-  if (user?.image || user?.name) {
+  if (user?.image || user?.name || user?.surname) {
     return (
       <Avatar className={className || "h-8 w-8"}>
-        <AvatarImage src={user.image ?? undefined} alt={user.name ?? "Użytkownik"} />
+        <AvatarImage src={user.image ?? undefined} alt={`${user.name} ${user.surname}`.trim() ?? "Użytkownik"} />
         <AvatarFallback className={clsx("bg-red-500 text-white text-xs font-semibold", fallbackClassName)}>
-          {getInitials(user.name)}
+          {getInitials(`${user.name} ${user.surname}`.trim())}
         </AvatarFallback>
       </Avatar>
     );

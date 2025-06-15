@@ -21,6 +21,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import clsx from "clsx";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { authClient } from "@/lib/auth-client";
 
 const pay_options = [
   { value: "payu", icon: Nfc, label: "PayU", description: "Szybka płatność online" },
@@ -154,6 +155,25 @@ const FormSchema = z
     }
   );
 function Cart() {
+  const { data: session, isPending, refetch } = authClient.useSession();
+  const [isLoading, setIsLoading] = useState(true);
+  const [address, setAddress] = useState<undefined | DeliveryFormData>(undefined);
+  const [company, setCompany] = useState<undefined | CompanyFormData>(undefined);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/profile/address").then((res) => res.json()),
+      fetch("/api/profile/company").then((res) => res.json())
+    ]).then(([addressData, companyData]) => {
+      if (addressData.status === "OK") {
+        setAddress(addressData.address);
+      }
+      if (companyData.status === "OK") {
+        setCompany(companyData.company);
+      }
+      setIsLoading(false);
+    });
+  }, []);
   const { isLocalStorageUpdated } = useCartState();
   const methods = useForm({
     resolver: zodResolver(FormSchema),
@@ -196,8 +216,24 @@ function Cart() {
     watch,
     control,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = methods;
+
+  useEffect(() => {
+    if (address) setValue("delivery", address);
+    if (company) setValue("company", company);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!session || !session.user) return;
+    setValue("contact", {
+      firstName: session.user.name,
+      lastName: session.user.surname,
+      phone: session.user.phone ?? "",
+      email: session.user.email
+    });
+  }, [isPending]);
 
   const [isInvoice, selectedDeliveryMethod] = watch(["invoice", "deliveryMethod"]);
 
