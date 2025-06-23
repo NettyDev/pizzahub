@@ -198,22 +198,18 @@ export default function StatsComponent() {
                     <span>Łącznie wydano:</span>{" "}
                     <span className="font-semibold">{stats.topSelect.totalSpent.toFixed(2)} zł</span>
                   </div>
-                  {/* {stats.topSelect.averageRating && (
                   <div className="flex items-center justify-between pt-1">
-                    <span>Średnia ocena tej pizzy:</span>
+                    <span>Średnia ocena:</span>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${i < Math.round(stats.topSelect!.averageRating!) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
+                          className={`h-4 w-4 ${i < Math.round(3.9) ? "text-yellow-400 fill-yellow-400" : "text-stone-300"}`}
                         />
                       ))}
-                      <span className="ml-1.5 text-xs font-semibold">
-                        ({stats.topSelect.averageRating.toFixed(1)})
-                      </span>
+                      <span className="ml-1.5 text-xs font-semibold">({(3.9).toFixed(1)})</span>
                     </div>
                   </div>
-                )} */}
                   {/* {stats.topSelect.averageRating && (
                     <div className="flex items-center justify-center pt-1">
                       {[...Array(5)].map((_, i) => (

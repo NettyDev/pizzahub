@@ -137,7 +137,7 @@ export default function Orders() {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "OK") {
-          setOrders(data.newOrders);
+          setOrders(data.newOrders.map((order: any) => ({ ...order, userRating: 0 }))); // Initialize userRating to 0
         } else {
           console.error("Błąd podczas pobierania zamówień:", data.message);
         }
@@ -145,12 +145,12 @@ export default function Orders() {
       });
   }, []);
 
-  // const handleRatingChange = (orderId: string, rating: number) => {
-  //   setOrders((prevOrders) =>
-  //     prevOrders.map((order) => (order.id === orderId ? { ...order, userRating: rating } : order))
-  //   );
-  //   console.log(`Zamówienie ${orderId} ocenione na ${rating} gwiazdek`);
-  // };
+  const handleRatingChange = (orderId: string, rating: number) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) => (order.id === orderId ? { ...order, userRating: rating } : order))
+    );
+    console.log(`Zamówienie ${orderId} ocenione na ${rating} gwiazdek`);
+  };
 
   if (isLoading) {
     return (
@@ -256,7 +256,7 @@ export default function Orders() {
                     </li>
                   ))}
                 </ul>
-                {/* {order.status === "Dostarczone" && (
+                {order.status === "completed" && (
                   <div className="mt-5">
                     <p className="text-xs mb-1 text-center sm:text-left">Twoja ocena:</p>
                     <StarRating
@@ -266,7 +266,7 @@ export default function Orders() {
                       readonly={order.userRating > 0}
                     />
                   </div>
-                )} */}
+                )}
               </div>
 
               <div className="pt-4 border-t border-red-700 mt-auto">
@@ -276,14 +276,14 @@ export default function Orders() {
                     <p className="text-xl font-bold text-red-600">{formatCurrency(order.price)}</p>
                   </div>
                 </div>
-                {/* <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                <div className="flex flex-col sm:flex-row gap-3 justify-end">
                   <Button
                     size="sm"
                     className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto shadow-md hover:shadow-lg transition-shadow rounded-md"
                   >
                     Zamów ponownie
                   </Button>
-                </div> */}
+                </div>
               </div>
             </div>
           ))}

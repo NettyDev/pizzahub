@@ -130,7 +130,7 @@ export default function PizzaCustomizationDialog({
 
   if (!pizzaData) return null;
 
-  const baseIngredientsList = pizzaData.baseIngredients || [];
+  const baseIngredientsList = pizzaData.ingredients || [];
   const availableToppingsList = pizzaData.availableToppings || [];
 
   return (
