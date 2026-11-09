@@ -14,7 +14,7 @@ if (!process.env.BETTER_AUTH_SECRET) {
 }
 
 console.log("Stosowanie migracji Prisma");
-await $`bunx prisma migrate deploy`;
+await $`bunx prisma@6.9 migrate deploy`;
 
 type User = { name: string; surname: string; email: string }[];
 
